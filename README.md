@@ -47,12 +47,16 @@ pnpm install
 # 백엔드와 프론트엔드 모두 개발 모드로 실행
 npm run dev
 
-# 백엔드만 실행
+# 백엔드만 실행 (http://localhost:3001)
 npm run dev:backend
 
-# 프론트엔드만 실행
+# 프론트엔드만 실행 (http://localhost:3000)
 npm run dev:frontend
 ```
+
+개발 서버 주소:
+- **프론트엔드**: http://localhost:3000
+- **백엔드 API**: http://localhost:3001/api
 
 ### 빌드
 
