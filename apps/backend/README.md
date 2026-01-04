@@ -1,30 +1,30 @@
-# Backend Application
+# Backend 애플리케이션
 
-NestJS backend application with PostgreSQL (Supabase) integration.
+PostgreSQL (Supabase) 통합된 NestJS 백엔드 애플리케이션입니다.
 
-## Database Setup
+## 데이터베이스 설정
 
-This application uses PostgreSQL via Supabase with TypeORM.
+이 애플리케이션은 TypeORM을 통해 Supabase의 PostgreSQL을 사용합니다.
 
-### Getting Your Supabase Connection Details
+### Supabase 연결 정보 가져오기
 
-1. Go to your Supabase project dashboard
-2. Navigate to **Settings** > **Database**
-3. Under **Connection Info**, you'll find:
+1. Supabase 프로젝트 대시보드로 이동
+2. **Settings** > **Database** 메뉴로 이동
+3. **Connection Info** 섹션에서 다음 정보를 확인:
    - Host: `db.<your-project-ref>.supabase.co`
    - Port: `5432`
    - Database name: `postgres`
    - Username: `postgres`
-   - Password: (the password you set during project creation)
+   - Password: (프로젝트 생성 시 설정한 비밀번호)
 
-### Configuration
+### 환경 설정
 
-1. Copy `.env.example` to `.env`:
+1. `.env.example` 파일을 `.env`로 복사:
    ```bash
    cp .env.example .env
    ```
 
-2. Update `.env` with your Supabase credentials:
+2. `.env` 파일에 Supabase 연결 정보 입력:
    ```env
    DB_HOST=db.your-project-ref.supabase.co
    DB_PORT=5432
@@ -34,33 +34,33 @@ This application uses PostgreSQL via Supabase with TypeORM.
    DB_SSL=true
    ```
 
-### Running the Application
+### 애플리케이션 실행
 
 ```bash
-# Development
+# 개발 모드
 npm run dev:backend
 
-# The API will be available at http://localhost:3001/api
+# API는 http://localhost:3001/api 에서 사용 가능
 ```
 
-### Database Entities
+### 데이터베이스 엔티티
 
-The application includes an example `User` entity located at `src/entities/user.entity.ts`.
+애플리케이션에는 `src/entities/user.entity.ts` 위치에 예제 `User` 엔티티가 포함되어 있습니다.
 
-TypeORM will automatically sync the database schema in development mode (`synchronize: true`).
+TypeORM은 개발 모드에서 데이터베이스 스키마를 자동으로 동기화합니다 (`synchronize: true`).
 
-**Warning**: Disable `synchronize` in production and use migrations instead.
+**경고**: 프로덕션 환경에서는 `synchronize`를 비활성화하고 마이그레이션을 사용하세요.
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 apps/backend/
 ├── src/
-│   ├── app/              # Main application module
-│   ├── config/           # Configuration files
-│   ├── entities/         # TypeORM entities
-│   └── main.ts          # Application entry point
-├── .env                  # Environment variables (not in git)
-├── .env.example         # Example environment variables
-└── README.md            # This file
+│   ├── app/              # 메인 애플리케이션 모듈
+│   ├── config/           # 설정 파일
+│   ├── entities/         # TypeORM 엔티티
+│   └── main.ts          # 애플리케이션 진입점
+├── .env                  # 환경 변수 (git에 포함되지 않음)
+├── .env.example         # 환경 변수 예제
+└── README.md            # 이 파일
 ```
