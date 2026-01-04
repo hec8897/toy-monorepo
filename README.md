@@ -10,9 +10,9 @@
 toy-monorepo/
 ├── apps/
 │   ├── backend/          # NestJS 백엔드 애플리케이션
-│   ├── backend-e2e/      # 백엔드 E2E 테스트
-│   ├── frontend/         # Next.js 프론트엔드 애플리케이션
-│   └── frontend-e2e/     # 프론트엔드 E2E 테스트
+│   │   └── e2e/          # 백엔드 E2E 테스트 (Jest)
+│   └── frontend/         # Next.js 프론트엔드 애플리케이션
+│       └── e2e/          # 프론트엔드 E2E 테스트 (Playwright)
 ├── packages/             # 공유 패키지 및 유틸리티
 │   ├── common/          # 공통 유틸리티 라이브러리
 │   └── types/           # 공유 TypeScript 타입 정의

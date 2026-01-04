@@ -5,5 +5,13 @@
   "projectType": "application",
   "tags": [],
   "// targets": "to see all targets run: nx show project frontend --web",
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{workspaceRoot}/dist/.playwright/apps/frontend/e2e"],
+      "options": {
+        "config": "apps/frontend/e2e/playwright.config.ts"
+      }
+    }
+  }
 }

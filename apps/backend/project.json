@@ -59,6 +59,15 @@
           "buildTarget": "backend:build:production"
         }
       }
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/backend/e2e"],
+      "options": {
+        "jestConfig": "apps/backend/e2e/jest.config.cts",
+        "passWithNoTests": true
+      },
+      "dependsOn": ["build", "serve"]
     }
   },
   "tags": []

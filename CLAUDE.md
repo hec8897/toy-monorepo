@@ -24,6 +24,8 @@ npm test                 # Run all tests
 npm run test:backend     # Test backend only
 npm run test:frontend    # Test frontend only
 npx nx test <project>    # Run tests for specific project
+npx nx run backend:e2e   # Run backend E2E tests
+npx nx run frontend:e2e  # Run frontend E2E tests
 
 # Linting
 npm run lint             # Lint all projects
@@ -42,10 +44,11 @@ npx nx show project <name>  # Show project configuration details
 ### Monorepo Structure
 
 - **apps/backend/** - NestJS application (port 3001)
+  - **e2e/** - Backend E2E tests (Jest)
 - **apps/frontend/** - Next.js 16 application (port 3000)
+  - **e2e/** - Frontend E2E tests (Playwright)
 - **packages/common/** - Shared utilities (@toy-monorepo/common)
 - **packages/types/** - Shared TypeScript types (@toy-monorepo/types)
-- **apps/\*-e2e/** - E2E test suites (Jest for backend, Playwright for frontend)
 
 ### NX Configuration
 
