@@ -45,11 +45,12 @@ npx nx show project <name>  # Show project configuration details
 - **apps/frontend/** - Next.js 16 application (port 3000)
 - **packages/common/** - Shared utilities (@toy-monorepo/common)
 - **packages/types/** - Shared TypeScript types (@toy-monorepo/types)
-- **apps/*-e2e/** - E2E test suites (Jest for backend, Playwright for frontend)
+- **apps/\*-e2e/** - E2E test suites (Jest for backend, Playwright for frontend)
 
 ### NX Configuration
 
 The monorepo uses NX plugins to manage different project types:
+
 - **@nx/webpack/plugin** - Backend build (target: `serve`)
 - **@nx/next/plugin** - Frontend build (target: `dev`)
 - **@nx/jest/plugin** - Unit testing
@@ -68,6 +69,7 @@ The backend has a global API prefix `/api` configured in `apps/backend/src/main.
 ### TypeScript Path Aliases
 
 Shared packages are accessible via path aliases defined in `tsconfig.base.json`:
+
 - `@toy-monorepo/common` → `packages/common/src/index.ts`
 - `@toy-monorepo/types` → `packages/types/src/index.ts`
 
@@ -76,6 +78,7 @@ Use these imports instead of relative paths when consuming shared code.
 ### CORS Configuration
 
 CORS is pre-configured in the backend for:
+
 - Frontend (`http://localhost:3000`)
 - Alternative dev port (`http://localhost:4200`)
 - Future Flutter WebView integration (credentials enabled)
@@ -103,3 +106,46 @@ Located in `apps/backend/src/main.ts:16-25`.
 - The frontend uses Next.js App Router (not Pages Router).
 - ESLint ignores build outputs (`.next`, `dist`, `out-tsc`).
 - The monorepo is configured for future mobile app integration via WebView.
+
+## Git Branch Strategy
+
+This repo uses a Git Flow inspired branching model.
+
+### Main branches
+
+- `main`: Production-ready code. Only release branches and hotfixes are merged here.
+- `develop`: Integration branch for ongoing development. New features start from here.
+
+### Supporting branches
+
+- `feature/*`: New features or experiments
+  - Base branch: `develop`
+  - Naming: `feature/<scope>-<short-description>`
+  - Example: `feature/web-auth-page`, `feature/api-user-crud`
+
+- `release/*`: Preparation for a new production release
+  - Base branch: `develop`
+  - Used for: version bump, final bug fixes, docs updates
+  - After completion: merge into `main` and back into `develop`
+
+- `hotfix/*`: Critical fixes for production
+  - Base branch: `main`
+  - After completion: merge into `main` and back into `develop`
+
+### Typical workflows
+
+- Start a new feature
+  - `git checkout develop`
+  - `git checkout -b feature/web-sso-login`
+
+- Finish a feature
+  - Open a PR from `feature/...` into `develop`
+  - Squash & merge with a clear commit message
+
+- Create a release
+  - `git checkout develop`
+  - `git checkout -b release/0.1.0`
+
+- Hotfix production
+  - `git checkout main`
+  - `git checkout -b hotfix/fix-api-timeout`
