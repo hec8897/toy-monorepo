@@ -4,12 +4,11 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
 @Entity('members')
 export class Member {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ type: 'text' })
   username: string;
@@ -17,7 +16,6 @@ export class Member {
   @Column({ type: 'text' })
   name: string;
 
-  @Exclude()
   @Column({ type: 'text' })
   password: string;
 
