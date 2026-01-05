@@ -88,6 +88,81 @@ CORS is pre-configured in the backend for:
 
 Located in `apps/backend/src/main.ts:16-25`.
 
+## 데이터베이스 & Supabase
+
+### 개요
+
+백엔드는 **TypeORM**을 ORM으로 사용하여 **Supabase**를 통한 **PostgreSQL** 데이터베이스를 사용합니다. 데이터베이스 설정은 연결 URL과 개별 연결 매개변수 모두 지원하여 유연성을 제공합니다.
+
+### 데이터베이스 설정
+
+설정은 `apps/backend/src/config/database.config.ts`를 통해 관리되며, 두 가지 연결 모드를 지원합니다:
+
+1. **DATABASE_URL 모드** (Supabase 권장):
+   - 단일 연결 문자열 사용
+   - 자동 SSL 설정
+   - 간편한 설정
+
+2. **개별 매개변수 모드**:
+   - host, port, username, password, database 개별 설정
+   - SSL 설정 가능
+   - 로컬 개발 또는 커스텀 설정에 유용
+
+### 환경 변수
+
+`apps/backend/.env.example`을 `apps/backend/.env`로 복사하고 설정:
+
+```bash
+# 옵션 1: 연결 URL (Supabase 권장)
+DATABASE_URL=postgresql://postgres.your-project-ref:your-password@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
+
+# 옵션 2: 개별 매개변수
+DB_HOST=aws-0-ap-northeast-2.pooler.supabase.com
+DB_PORT=6543
+DB_USERNAME=postgres.your-username
+DB_PASSWORD=your-password
+DB_DATABASE=postgres
+DB_SSL=true
+
+# 애플리케이션
+PORT=3001
+NODE_ENV=development
+```
+
+**참고**: `DATABASE_URL`이 설정되면 개별 매개변수보다 우선합니다.
+
+### 엔티티
+
+현재 TypeORM 엔티티:
+
+- **Member** (`apps/backend/src/entities/member.entity.ts`):
+  - 테이블: `members`
+  - 필드: `id` (bigint), `username`, `name`, `password`, `phone`, `created_at`
+  - `MembersModule`에서 회원 관리에 사용
+
+- **User** (`apps/backend/src/entities/user.entity.ts`):
+  - 테이블: `users`
+  - 필드: `id` (uuid), `email`, `name`, `createdAt`, `updatedAt`
+  - email은 고유값
+
+### TypeORM 설정
+
+- **자동 동기화**: 개발 모드에서 활성화 (`synchronize: true`)
+- **SSL**: Supabase 연결에 필수
+- **로깅**: 개발 환경에서 디버깅을 위해 활성화
+- **엔티티 등록**: 모든 엔티티는 `getDatabaseConfig()`에 등록되어야 함
+
+### API 엔드포인트
+
+- `GET /api/members` - 모든 회원 조회 (`MembersController`에서 처리)
+
+### 새 엔티티 추가하기
+
+1. `apps/backend/src/entities/`에 엔티티 파일 생성
+2. `apps/backend/src/config/database.config.ts`에 엔티티 등록
+3. 해당 모듈, 서비스, 컨트롤러 생성
+4. `AppModule`(`apps/backend/src/app/app.module.ts`)에 모듈 임포트
+
 ## NX Build System Features
 
 - **Caching**: Build, lint, and test operations are cached. Use `--skip-nx-cache` to bypass.
