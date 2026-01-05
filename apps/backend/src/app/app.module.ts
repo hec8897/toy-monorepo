@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { getDatabaseConfig } from '../config/database.config';
 import { TablesModule } from '../tables/tables.module';
+import { MembersModule } from '../members/members.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TablesModule } from '../tables/tables.module';
     }),
     TypeOrmModule.forRoot(getDatabaseConfig()),
     TablesModule,
+    MembersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
