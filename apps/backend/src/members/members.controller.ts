@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { MemberResponseDto } from './dto/member-response.dto';
 
@@ -9,5 +9,10 @@ export class MembersController {
   @Get()
   async findAll(): Promise<MemberResponseDto[]> {
     return this.membersService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<MemberResponseDto> {
+    return this.membersService.findById(id);
   }
 }
