@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { getDatabaseConfig } from '../config/database.config';
 import { TablesModule } from '../tables/tables.module';
 import { MembersModule } from '../members/members.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MembersModule } from '../members/members.module';
     TypeOrmModule.forRoot(getDatabaseConfig()),
     TablesModule,
     MembersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
