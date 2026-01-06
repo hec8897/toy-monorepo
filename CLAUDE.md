@@ -189,6 +189,7 @@ npx nx run backend:serve --skip-nx-cache
 - ESLint + Prettier 규칙 준수
 - Git pre-commit hook으로 자동 검사
 - 모든 변경사항은 PR 리뷰 필수
+- **⚠️ 중요**: Git 커밋 및 푸시는 반드시 사용자에게 확인 후 실행
 
 ### 6. NX 모노레포 규칙
 - 공유 코드는 `packages/` 아래 배치
