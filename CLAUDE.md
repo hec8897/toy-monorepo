@@ -2,6 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Communication Style
+
+**언어**: 가능한 모든 응답을 한글로 작성해주세요 🇰🇷
+
+**아이콘 사용**: 응답을 더욱 명확하고 친근하게 만들기 위해 적절한 아이콘을 사용해주세요:
+- ✅ 성공, 완료
+- ❌ 실패, 에러
+- 🚀 시작, 배포
+- 📝 문서, 설명
+- 🔧 설정, 도구
+- 💡 팁, 제안
+- ⚠️ 경고, 주의사항
+- 🎯 목표, 핵심
+- 📦 패키지, 의존성
+- 🔍 검색, 조사
+- 🎨 UI/UX, 디자인
+- 🐛 버그
+- ✨ 새로운 기능
+
+**예시**:
+```
+✅ 서버가 성공적으로 시작되었습니다!
+📦 패키지 설치 중...
+⚠️ 주의: 이 작업은 되돌릴 수 없습니다
+```
+
 ## Project Overview
 
 This is an NX monorepo managing both backend (NestJS) and frontend (Next.js) applications with shared TypeScript packages. The project is designed with future Flutter WebView integration in mind.
