@@ -210,6 +210,7 @@ npx nx run backend:serve --skip-nx-cache
 - TypeORM 엔티티는 `apps/backend/src/entities/`에 작성
 - 엔티티 변경 시 `database.config.ts`에 등록
 - 개발 환경에서만 `synchronize: true` (프로덕션은 마이그레이션 사용)
+- **⚠️ 중요**: 백엔드 테스트 중 DB 쿼리 실행이 필요한 경우, 반드시 사용자에게 확인 후 실행
 
 ### 10. API 설계
 - RESTful 원칙 준수
