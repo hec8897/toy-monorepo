@@ -119,6 +119,102 @@ nx show project backend
 nx show project frontend
 ```
 
+## 기술 선택 이유
+
+### NX Monorepo
+- **코드 공유**: 백엔드-프론트엔드 간 타입과 유틸리티 공유로 중복 제거
+- **스마트 캐싱**: 빌드 캐시로 CI/CD 속도 대폭 향상
+- **확장성**: 새로운 앱 추가가 쉬운 구조
+
+### NestJS (백엔드)
+- **TypeScript 우선**: 데이터베이스부터 API까지 완전한 타입 안전성
+- **모듈식 아키텍처**: 깔끔한 관심사 분리
+- **풍부한 생태계**: TypeORM, Passport, JWT 등 원활한 통합
+
+### 주요 라이브러리
+- **TypeORM** + **Supabase**: 타입 안전 DB 작업, 우수한 무료 티어
+- **Passport + JWT**: 업계 표준 인증
+- **bcrypt**: 안전한 비밀번호 해싱
+
+## 아키텍처
+
+### 계층 구조
+```
+프레젠테이션 계층 (Controllers, DTOs)
+       ↓
+비즈니스 로직 계층 (Services)
+       ↓
+데이터 접근 계층 (Repositories, Entities)
+       ↓
+데이터베이스 계층 (PostgreSQL/Supabase)
+```
+
+### 설계 원칙
+1. **타입 안전성 우선**: 엔드-투-엔드 TypeScript
+2. **관심사 분리**: 컨트롤러/서비스/리포지토리 명확한 역할 구분
+3. **기본 보안**: JWT 인증, 비밀번호 해싱, 입력 검증
+4. **테스트 가능성**: 의존성 주입 및 모킹 용이
+5. **코드 품질**: ESLint, Prettier, 코드 리뷰 필수
+
+### 모듈 구조
+```
+feature/
+├── feature.module.ts       # 모듈 정의
+├── feature.controller.ts   # HTTP 엔드포인트
+├── feature.service.ts      # 비즈니스 로직
+├── dto/                    # 데이터 전송 객체
+└── entities/               # DB 모델
+```
+
+## AI 활용 계획
+
+### 현재 활용
+- **Claude Code**: 개발 지원 (코드 생성, 리팩토링, 버그 수정, 문서화)
+
+### 향후 계획
+- **LLM API 통합**: Claude API 또는 GPT-4
+  - 지능형 검색 및 추천
+  - 콘텐츠 생성 및 요약
+  - 자연어 → SQL 변환
+- **AI 챗봇**: RAG 기반 고객 지원
+- **콘텐츠 처리**: 요약, 감성 분석, 번역
+
+## 개발 로드맵
+
+### Phase 1: 기반 구축 ✅
+- [x] NX Monorepo 설정
+- [x] NestJS 백엔드 + TypeORM
+- [x] JWT 인증 시스템
+- [x] Members CRUD API
+- [x] Supabase 연동
+
+### Phase 2: 핵심 기능 🚧
+- [ ] 사용자 등록 및 프로필 관리
+- [ ] RBAC (역할 기반 접근 제어)
+- [ ] 프론트엔드 인증 페이지
+- [ ] API 속도 제한
+
+### Phase 3: 고급 기능 📋
+- [ ] AI 챗봇 통합
+- [ ] 실시간 알림 (WebSocket/SSE)
+- [ ] 파일 업로드 (Supabase Storage)
+- [ ] 이메일 서비스
+
+### Phase 4+: 확장 🔮
+- [ ] Flutter 모바일 앱 (WebView)
+- [ ] Redis 캐싱
+- [ ] 프로덕션 배포
+- [ ] 모니터링 (Sentry, Datadog)
+
+### 우선순위
+
+| 순위 | 기능 | 영향도 | 작업량 |
+|------|------|--------|--------|
+| P0 | 사용자 등록 | 높음 | 중간 |
+| P0 | RBAC | 높음 | 높음 |
+| P1 | 프론트 인증 UI | 높음 | 중간 |
+| P2 | AI 챗봇 | 중간 | 높음 |
+
 ## 미래 계획
 
 - Flutter WebView 통합 준비 완료 (CORS 설정 구성됨)
