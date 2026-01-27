@@ -16,7 +16,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const clientIp = this.getClientIp(request);
 
       if (!this.isLocalhost(clientIp)) {
-        this.logger.warn(`Master token rejected from non-localhost IP: ${clientIp}`);
+        this.logger.warn(
+          `Master token rejected from non-localhost IP: ${clientIp}`,
+        );
         return super.canActivate(context);
       }
 

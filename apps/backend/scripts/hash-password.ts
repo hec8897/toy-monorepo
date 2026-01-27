@@ -6,7 +6,9 @@ async function hashPassword(password: string) {
   console.info('Password:', password);
   console.info('Hashed:', hash);
   console.info('\nSQL Update command:');
-  console.info(`UPDATE members SET password = '${hash}' WHERE username = 'hec8897';`);
+  console.info(
+    `UPDATE members SET password = '${hash}' WHERE username = 'hec8897';`,
+  );
 }
 
 // 기본 비밀번호를 'password123'으로 설정

@@ -13,7 +13,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (req: Request) => req?.cookies?.access_token, // 2. HttpOnly 쿠키
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+      secretOrKey:
+        process.env.JWT_SECRET || 'your-secret-key-change-in-production',
     });
   }
 
