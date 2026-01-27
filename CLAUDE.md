@@ -131,6 +131,9 @@ npm run test:frontend
 npx nx run backend:e2e
 npx nx run frontend:e2e
 
+# 특정 테스트 파일만 실행
+npx nx test backend -- --testPathPattern="members.service"
+
 # 영향받은 프로젝트만 테스트
 npm run affected:test
 ```
@@ -177,6 +180,8 @@ npx nx run backend:serve --skip-nx-cache
 ### 3. 보안 (Security)
 - 비밀번호는 bcrypt로 해싱 (솔트 라운드 10)
 - JWT 토큰 기반 인증 (Bearer token)
+- Master token 인증 지원 (`.env`의 `MASTER_TOKEN`)
+- Cookie 기반 인증 지원 (`cookie-parser`)
 - 모든 DTO에 class-validator 적용
 - 환경 변수로 민감한 정보 관리 (`.env` 파일, git ignore)
 
