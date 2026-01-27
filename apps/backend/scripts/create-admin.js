@@ -8,8 +8,12 @@ async function createAdmin() {
 
   if (!command || !['create', 'upgrade'].includes(command)) {
     console.log('Usage:');
-    console.log('  node create-admin.js create <username> <password>  - Create new admin');
-    console.log('  node create-admin.js upgrade <username>            - Upgrade existing user to admin');
+    console.log(
+      '  node create-admin.js create <username> <password>  - Create new admin',
+    );
+    console.log(
+      '  node create-admin.js upgrade <username>            - Upgrade existing user to admin',
+    );
     process.exit(1);
   }
 
@@ -34,11 +38,13 @@ async function createAdmin() {
       // Check if user exists
       const checkResult = await client.query(
         'SELECT id FROM members WHERE username = $1',
-        [username]
+        [username],
       );
 
       if (checkResult.rows.length > 0) {
-        console.error(`Error: User '${username}' already exists. Use 'upgrade' command instead.`);
+        console.error(
+          `Error: User '${username}' already exists. Use 'upgrade' command instead.`,
+        );
         process.exit(1);
       }
 
@@ -48,14 +54,19 @@ async function createAdmin() {
         `INSERT INTO members (username, name, password, phone, role)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING id, username, name, role`,
-        [username, `Admin ${username}`, hashedPassword, '000-0000-0000', 'admin']
+        [
+          username,
+          `Admin ${username}`,
+          hashedPassword,
+          '000-0000-0000',
+          'admin',
+        ],
       );
 
       console.log('Admin created:', result.rows[0]);
       console.log('\nLogin credentials:');
       console.log(`Username: ${username}`);
       console.log(`Password: ${password}`);
-
     } else if (command === 'upgrade') {
       const username = args[1];
 
@@ -68,7 +79,7 @@ async function createAdmin() {
       // Check if user exists
       const checkResult = await client.query(
         'SELECT id, username, role FROM members WHERE username = $1',
-        [username]
+        [username],
       );
 
       if (checkResult.rows.length === 0) {
@@ -83,14 +94,13 @@ async function createAdmin() {
       }
 
       // Upgrade to admin
-      await client.query(
-        'UPDATE members SET role = $1 WHERE username = $2',
-        ['admin', username]
-      );
+      await client.query('UPDATE members SET role = $1 WHERE username = $2', [
+        'admin',
+        username,
+      ]);
 
       console.log(`User '${username}' upgraded to admin`);
     }
-
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);
