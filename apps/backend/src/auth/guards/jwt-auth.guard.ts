@@ -33,6 +33,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private getClientIp(request: any): string {
     return (
       request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
