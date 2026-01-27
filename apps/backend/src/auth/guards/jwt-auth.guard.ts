@@ -1,5 +1,6 @@
 import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { Role } from '../enums/role.enum';
 
 @Injectable()
@@ -16,7 +17,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const clientIp = this.getClientIp(request);
 
       if (!this.isLocalhost(clientIp)) {
-        this.logger.warn(`Master token rejected from non-localhost IP: ${clientIp}`);
+        this.logger.warn(
+          `Master token rejected from non-localhost IP: ${clientIp}`,
+        );
         return super.canActivate(context);
       }
 
@@ -33,14 +36,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  private getClientIp(request: any): string {
-    return (
-      request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-      request.connection?.remoteAddress ||
-      request.socket?.remoteAddress ||
-      request.ip ||
-      ''
-    );
+  private getClientIp(request: Request): string {
+    const forwardedFor = request.headers['x-forwarded-for'];
+    const forwarded = Array.isArray(forwardedFor)
+      ? forwardedFor[0]
+      : forwardedFor?.split(',')[0]?.trim();
+
+    return forwarded || request.socket?.remoteAddress || request.ip || '';
   }
 
   private isLocalhost(ip: string): boolean {

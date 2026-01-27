@@ -13,11 +13,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (req: Request) => req?.cookies?.access_token, // 2. HttpOnly 쿠키
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+      secretOrKey:
+        process.env.JWT_SECRET || 'your-secret-key-change-in-production',
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: { sub: string }) {
     const user = await this.authService.validateUser(payload.sub);
     if (!user) {
       throw new UnauthorizedException();
