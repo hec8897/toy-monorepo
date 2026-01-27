@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+echo "🔍 Pre-push 검사 실행 중..."
+
+# Lint 체크
+echo "📝 Lint 검사 중..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ Lint 검사 실패. push를 중단합니다."
+  exit 1
+fi
+
+# Prettier 체크
+echo "🎨 Prettier 검사 중..."
+npx prettier --check "**/*.{ts,tsx,js,jsx,json,css,md}" --ignore-path .gitignore
+if [ $? -ne 0 ]; then
+  echo "❌ Prettier 검사 실패. 'npx prettier --write .' 명령어로 포맷팅 후 다시 시도하세요."
+  exit 1
+fi
+
+echo "✅ 모든 검사 통과!"

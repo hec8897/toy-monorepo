@@ -16,7 +16,7 @@ async function listTables() {
 
   try {
     await client.connect();
-    console.log('✓ Connected to Supabase database\n');
+    // console.log('✓ Connected to Supabase database\n');
 
     const result = await client.query(`
       SELECT
@@ -29,10 +29,10 @@ async function listTables() {
     `);
 
     if (result.rows.length === 0) {
-      console.log('No tables found in the database.');
+      console.info('No tables found in the database.');
     } else {
-      console.log(`Found ${result.rows.length} table(s):\n`);
-      console.table(result.rows);
+      console.info(`Found ${result.rows.length} table(s):\n`);
+      console.info(result.rows);
     }
 
     await client.end();

@@ -19,7 +19,8 @@
     "graph": "nx graph",
     "affected:graph": "nx affected:graph",
     "affected:build": "nx affected --target=build",
-    "affected:test": "nx affected --target=test"
+    "affected:test": "nx affected --target=test",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -53,10 +54,14 @@
     "concurrently": "^9.2.1",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
     "jest": "^30.0.2",
     "jest-environment-node": "^30.0.2",
     "jest-util": "^30.0.2",
     "jsonc-eslint-parser": "^2.1.0",
+    "lint-staged": "^16.2.7",
     "nx": "^22.3.3",
     "prettier": "~3.6.2",
     "ts-jest": "^29.4.0",
@@ -82,5 +87,14 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "typeorm": "^0.3.28"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   }
 }
