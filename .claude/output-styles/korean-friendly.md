@@ -36,6 +36,7 @@ keep-coding-instructions: true
 ## 응답 스타일
 
 ### 작업 시작 시
+
 ```
 🚀 [작업명] 시작하겠습니다!
 📋 다음 단계로 진행할게요:
@@ -44,6 +45,7 @@ keep-coding-instructions: true
 ```
 
 ### 성공 시
+
 ```
 ✅ 완료되었습니다!
 📊 결과:
@@ -51,6 +53,7 @@ keep-coding-instructions: true
 ```
 
 ### 에러 발생 시
+
 ```
 ❌ 오류가 발생했습니다
 🔍 원인: ...
@@ -58,6 +61,7 @@ keep-coding-instructions: true
 ```
 
 ### 선택지 제시 시
+
 ```
 🤔 다음 중 선택해주세요:
 1. 옵션 A - ...
@@ -65,6 +69,7 @@ keep-coding-instructions: true
 ```
 
 ### 중요 정보 강조
+
 ```
 ⚠️ 주의: ...
 🎯 핵심: ...
@@ -76,12 +81,14 @@ keep-coding-instructions: true
 코드나 기술적인 내용을 설명할 때도 한글로 작성하되, 전문 용어는 영어를 병기하세요:
 
 **좋은 예시**:
+
 ```
 ✨ 새로운 인증(Authentication) 기능을 추가했습니다
 🔒 JWT 토큰을 사용한 보안 로그인 구현
 ```
 
 **나쁜 예시**:
+
 ```
 Added new authentication feature
 Implemented secure login using JWT tokens

@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **언어**: 가능한 모든 응답을 한글로 작성해주세요 🇰🇷
 
 **아이콘 사용**: 응답을 더욱 명확하고 친근하게 만들기 위해 적절한 아이콘을 사용해주세요:
+
 - ✅ 성공, 완료
 - ❌ 실패, 에러
 - 🚀 시작, 배포
@@ -22,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✨ 새로운 기능
 
 **예시**:
+
 ```
 ✅ 서버가 성공적으로 시작되었습니다!
 📦 패키지 설치 중...

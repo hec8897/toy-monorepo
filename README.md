@@ -55,6 +55,7 @@ npm run dev:frontend
 ```
 
 개발 서버 주소:
+
 - **프론트엔드**: http://localhost:3000
 - **백엔드 API**: http://localhost:3001/api
 
@@ -72,20 +73,24 @@ npm run build:frontend
 ## 기술 스택
 
 ### 백엔드
+
 - **NestJS** - Progressive Node.js 프레임워크
 - **TypeScript** - 타입 안정성을 위한 정적 타입 언어
 - **Express** - HTTP 서버 (NestJS 기본 플랫폼)
 
 ### 프론트엔드
+
 - **Next.js 16** - React 기반 풀스택 프레임워크
 - **React 19** - UI 라이브러리
 - **TypeScript** - 타입 안정성을 위한 정적 타입 언어
 
 ### 공유 라이브러리
+
 - **@toy-monorepo/common** - 공통 유틸리티 함수
 - **@toy-monorepo/types** - 공유 TypeScript 타입 정의
 
 ### 개발 도구
+
 - **NX** - 모노레포 빌드 시스템 및 작업 실행 도구
 - **Jest** - 테스트 프레임워크
 - **Playwright** - E2E 테스트 도구
@@ -97,6 +102,7 @@ npm run build:frontend
 이 모노레포는 **NX**를 사용하여 여러 패키지를 효율적으로 관리합니다.
 
 ### NX 주요 기능
+
 - **증분 빌드**: 변경된 프로젝트만 다시 빌드
 - **작업 캐싱**: 이전 빌드 결과 재사용
 - **병렬 실행**: 여러 작업 동시 실행

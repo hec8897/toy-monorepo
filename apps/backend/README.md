@@ -20,6 +20,7 @@ PostgreSQL (Supabase) 통합된 NestJS 백엔드 애플리케이션입니다.
 ### 환경 설정
 
 1. `.env.example` 파일을 `.env`로 복사:
+
    ```bash
    cp .env.example .env
    ```
