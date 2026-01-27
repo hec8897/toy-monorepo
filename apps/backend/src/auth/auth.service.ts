@@ -38,6 +38,7 @@ export class AuthService {
       sub: member.id,
       username: member.username,
       name: member.name,
+      role: member.role,
     };
 
     // JWT 토큰 생성
@@ -49,6 +50,7 @@ export class AuthService {
         id: member.id,
         username: member.username,
         name: member.name,
+        role: member.role,
       },
     });
   }
@@ -56,7 +58,7 @@ export class AuthService {
   async validateUser(userId: string): Promise<Member | null> {
     return this.memberRepository.findOne({
       where: { id: userId },
-      select: ['id', 'username', 'name', 'phone', 'createdAt'],
+      select: ['id', 'username', 'name', 'phone', 'role', 'createdAt'],
     });
   }
 }

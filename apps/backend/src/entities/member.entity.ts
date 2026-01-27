@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
+import { Role } from '../auth/enums/role.enum';
 
 @Entity('members')
 export class Member {
@@ -21,6 +22,9 @@ export class Member {
 
   @Column({ type: 'text' })
   phone: string;
+
+  @Column({ type: 'text', default: Role.USER })
+  role: Role;
 
   @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
   createdAt: Date;
