@@ -3,3 +3,6 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+
+# Next.js auto-generated
+**/next-env.d.ts
