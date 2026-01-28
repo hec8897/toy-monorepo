@@ -1,12 +1,12 @@
-import { Role } from '../enums/role.enum';
+import { LoginResponse } from '@toy-monorepo/types';
 
-export class LoginResponseDto {
+export class LoginResponseDto implements LoginResponse {
   accessToken: string;
   user: {
     id: string;
     username: string;
     name: string;
-    role: Role;
+    role: 'user' | 'admin';
   };
 
   constructor(partial: Partial<LoginResponseDto>) {

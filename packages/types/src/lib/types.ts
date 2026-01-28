@@ -1,3 +1,2 @@
-export function types(): string {
-  return 'types';
-}
+export * from './user';
+export * from './auth';
