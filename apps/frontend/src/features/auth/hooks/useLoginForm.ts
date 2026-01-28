@@ -15,7 +15,7 @@ export function useLoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     // TODO: API 연결 시 구현
-    console.log('Login submitted:', data);
+    console.info('Login submitted:', data.username);
   };
 
   return {
