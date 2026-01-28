@@ -6,6 +6,7 @@ import { loginSchema, LoginFormData } from '../schemas/login.schema';
 export function useLoginForm() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
     defaultValues: {
       username: '',
       password: '',
