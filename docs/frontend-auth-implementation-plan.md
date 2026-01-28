@@ -3,6 +3,7 @@
 프론트엔드 인증 로직 구현 계획서
 
 ## 목표
+
 - 로그인 페이지
 - 토큰 저장 로직 (HttpOnly Cookie)
 - 유저 리스트 대시보드 (인증 확인용)
@@ -61,7 +62,8 @@ export * from './lib/types';
 ```typescript
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -399,6 +401,7 @@ export default function DashboardPage() {
 ### 파일: `apps/backend/src/auth/auth.controller.ts`
 
 현재 코드:
+
 ```typescript
 @Post('login')
 @HttpCode(HttpStatus.OK)
@@ -408,6 +411,7 @@ async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
 ```
 
 수정 코드:
+
 ```typescript
 import { Controller, Post, Body, HttpCode, HttpStatus, Res } from '@nestjs/common';
 import { Response } from 'express';
@@ -446,14 +450,14 @@ async login(
 
 ## 파일 체크리스트
 
-| Phase | 파일 | 작업 |
-|-------|------|------|
-| 1 | `packages/types/src/lib/types.ts` | 생성 |
-| 1 | `packages/types/src/index.ts` | 수정 |
-| 2 | `apps/frontend/src/lib/api.ts` | 생성 |
-| 3 | `apps/frontend/src/contexts/AuthContext.tsx` | 생성 |
-| 4 | `apps/frontend/src/app/layout.tsx` | 수정 |
-| 5 | `apps/frontend/src/components/auth/LoginForm.tsx` | 생성 |
-| 6 | `apps/frontend/src/app/login/page.tsx` | 생성 |
-| 7 | `apps/frontend/src/app/dashboard/page.tsx` | 생성 |
-| 8 | `apps/backend/src/auth/auth.controller.ts` | 수정 |
+| Phase | 파일                                              | 작업 |
+| ----- | ------------------------------------------------- | ---- |
+| 1     | `packages/types/src/lib/types.ts`                 | 생성 |
+| 1     | `packages/types/src/index.ts`                     | 수정 |
+| 2     | `apps/frontend/src/lib/api.ts`                    | 생성 |
+| 3     | `apps/frontend/src/contexts/AuthContext.tsx`      | 생성 |
+| 4     | `apps/frontend/src/app/layout.tsx`                | 수정 |
+| 5     | `apps/frontend/src/components/auth/LoginForm.tsx` | 생성 |
+| 6     | `apps/frontend/src/app/login/page.tsx`            | 생성 |
+| 7     | `apps/frontend/src/app/dashboard/page.tsx`        | 생성 |
+| 8     | `apps/backend/src/auth/auth.controller.ts`        | 수정 |
