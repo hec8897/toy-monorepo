@@ -23,6 +23,9 @@ export class Member {
   @Column({ type: 'text' })
   phone: string;
 
+  @Column({ type: 'text' })
+  email: string;
+
   @Column({ type: 'text', default: Role.USER })
   role: Role;
 
