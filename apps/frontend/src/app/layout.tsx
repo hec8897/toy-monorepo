@@ -1,5 +1,8 @@
 import './global.css';
+
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+
+import { QueryProvider } from '@/shared/providers/QueryProvider';
 
 export const metadata = {
   title: 'Toy Monorepo Frontend',
@@ -14,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AntdRegistry>{children}</AntdRegistry>
+        <QueryProvider>
+          <AntdRegistry>{children}</AntdRegistry>
+        </QueryProvider>
       </body>
     </html>
   );

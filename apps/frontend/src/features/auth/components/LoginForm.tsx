@@ -1,8 +1,10 @@
 'use client';
 
-import { Form, Input, Button, Card, Typography } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Controller } from 'react-hook-form';
+
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Alert, Button, Card, Form, Input, Typography } from 'antd';
+
 import { useLoginForm } from '../hooks/useLoginForm';
 
 const { Title } = Typography;
@@ -11,7 +13,8 @@ export function LoginForm() {
   const {
     control,
     onSubmit,
-    formState: { errors, isSubmitting },
+    isSubmitting,
+    formState: { errors },
   } = useLoginForm();
 
   return (
@@ -21,6 +24,17 @@ export function LoginForm() {
       </Title>
 
       <Form layout="vertical" onFinish={onSubmit}>
+        {errors.root && (
+          <Form.Item>
+            <Alert
+              title={errors.root.message}
+              type="error"
+              showIcon
+              style={{ marginBottom: 0 }}
+            />
+          </Form.Item>
+        )}
+
         <Form.Item
           label="ID"
           validateStatus={errors.username ? 'error' : ''}

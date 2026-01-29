@@ -5,4 +5,4 @@ export { LoginForm } from './components/LoginForm';
 export { useLoginForm } from './hooks/useLoginForm';
 
 // Schemas & Types
-export { loginSchema, type LoginFormData } from './schemas/login.schema';
+export { type LoginFormData, loginSchema } from './schemas/login.schema';
