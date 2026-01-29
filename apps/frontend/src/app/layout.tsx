@@ -3,6 +3,7 @@ import './global.css';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 import { QueryProvider } from '@/shared/providers/QueryProvider';
+import { AuthInitializer } from '@/shared/components/AuthInitializer';
 
 export const metadata = {
   title: 'Toy Monorepo Frontend',
@@ -18,7 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryProvider>
-          <AntdRegistry>{children}</AntdRegistry>
+          <AuthInitializer>
+            <AntdRegistry>{children}</AntdRegistry>
+          </AuthInitializer>
         </QueryProvider>
       </body>
     </html>
