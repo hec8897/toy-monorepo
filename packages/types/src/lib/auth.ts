@@ -14,3 +14,9 @@ export const LoginResponseSchema = z.object({
   user: UserSchema,
 });
 export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+
+// Logout Response
+export const LogoutResponseSchema = z.object({
+  message: z.string(),
+});
+export type LogoutResponse = z.infer<typeof LogoutResponseSchema>;
