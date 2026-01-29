@@ -64,11 +64,7 @@ export function AuthStatus() {
       <Space direction="vertical" size="small">
         <Text>로그인이 필요합니다.</Text>
         <Link href="/login">
-          <Button
-            type="primary"
-            icon={<LoginOutlined />}
-            onClick={() => router.push('/login')}
-          >
+          <Button type="primary" icon={<LoginOutlined />}>
             로그인
           </Button>
         </Link>
