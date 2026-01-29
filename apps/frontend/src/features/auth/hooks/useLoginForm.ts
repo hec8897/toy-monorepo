@@ -1,13 +1,12 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-
-import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 
-import { LoginFormData, loginSchema } from '../schemas/login.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useAuth } from '@/shared/hooks/useAuth';
+import { LoginFormData, loginSchema } from '../schemas/login.schema';
+import { useLoginMutation } from './useLoginMutation';
 
 interface ApiError {
   message: string;
@@ -15,8 +14,6 @@ interface ApiError {
 }
 
 export function useLoginForm() {
-  const { loginMutation } = useAuth();
-
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
@@ -26,16 +23,16 @@ export function useLoginForm() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      await loginMutation.mutateAsync(data);
-    } catch (error) {
+  const loginMutation = useLoginMutation({
+    onError: (error) => {
       const axiosError = error as AxiosError<ApiError>;
       const message =
         axiosError.response?.data?.message || '로그인에 실패했습니다.';
       form.setError('root', { message });
-    }
-  };
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => loginMutation.mutate(data);
 
   return {
     ...form,
