@@ -4,6 +4,9 @@ import { z } from 'zod';
 export const RoleSchema = z.enum(['user', 'admin']);
 export type Role = z.infer<typeof RoleSchema>;
 
+// Role constants (from Zod schema)
+export const RoleValues = RoleSchema.enum;
+
 // User
 export const UserSchema = z.object({
   id: z.string(),

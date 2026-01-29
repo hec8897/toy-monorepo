@@ -1,5 +1,4 @@
-import { LoginResponse } from '@toy-monorepo/types';
-import { Role } from '../enums/role.enum';
+import { LoginResponse, Role } from '@toy-monorepo/types';
 
 export class LoginResponseDto implements LoginResponse {
   accessToken: string;
