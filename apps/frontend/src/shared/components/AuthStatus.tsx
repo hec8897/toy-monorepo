@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button, Card, Spin, Space, Typography } from 'antd';
 import { UserOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../stores/authStore';
+import { useRouter } from 'next/navigation';
 
 const { Text, Title } = Typography;
 
@@ -13,7 +14,13 @@ const { Text, Title } = Typography;
  */
 
 export function AuthStatus() {
+  const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   if (isLoading) {
     return (
@@ -43,7 +50,7 @@ export function AuthStatus() {
             type="primary"
             danger
             icon={<LogoutOutlined />}
-            onClick={logout}
+            onClick={handleLogout}
           >
             로그아웃
           </Button>
@@ -57,7 +64,11 @@ export function AuthStatus() {
       <Space direction="vertical" size="small">
         <Text>로그인이 필요합니다.</Text>
         <Link href="/login">
-          <Button type="primary" icon={<LoginOutlined />}>
+          <Button
+            type="primary"
+            icon={<LoginOutlined />}
+            onClick={() => router.push('/login')}
+          >
             로그인
           </Button>
         </Link>
