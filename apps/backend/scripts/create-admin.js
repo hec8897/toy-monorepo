@@ -1,6 +1,6 @@
 require('dotenv').config();
-const { Client } = require('pg');
 const bcrypt = require('bcrypt');
+const { Client } = require('pg');
 
 async function createAdmin() {
   const args = process.argv.slice(2);

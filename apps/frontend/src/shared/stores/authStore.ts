@@ -1,7 +1,9 @@
 'use client';
 
 import { create } from 'zustand';
+
 import { User } from '@toy-monorepo/types';
+
 import { authApi } from '../lib/api';
 
 interface AuthState {

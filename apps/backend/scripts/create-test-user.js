@@ -1,5 +1,5 @@
-const { Client } = require('pg');
 const bcrypt = require('bcrypt');
+const { Client } = require('pg');
 
 async function createTestUser() {
   const client = new Client({

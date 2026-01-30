@@ -1,6 +1,7 @@
-import { Client } from 'pg';
-import * as dotenv from 'dotenv';
 import { join } from 'path';
+
+import * as dotenv from 'dotenv';
+import { Client } from 'pg';
 
 dotenv.config({ path: join(__dirname, '../.env') });
 

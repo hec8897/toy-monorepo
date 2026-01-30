@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
+
 import { Role, RoleValues } from '@toy-monorepo/types';
 
 @Entity('members')

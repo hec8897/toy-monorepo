@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Button, Card, Spin, Space, Typography } from 'antd';
-import { UserOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
-import { useAuthStore } from '../stores/authStore';
 import { useRouter } from 'next/navigation';
+
+import { UserOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
+import { Button, Card, Spin, Space, Typography } from 'antd';
+
+import { useAuthStore } from '../stores/authStore';
 
 const { Text, Title } = Typography;
 
