@@ -1,4 +1,4 @@
-import { Role } from '../../auth/enums/role.enum';
+import { Role } from '@toy-monorepo/types';
 
 export class MemberResponseDto {
   id: string;

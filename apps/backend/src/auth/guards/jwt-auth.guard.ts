@@ -1,6 +1,6 @@
 import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from '../enums/role.enum';
+import { RoleValues } from '@toy-monorepo/types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -27,7 +27,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         id: '0',
         username: 'master',
         name: 'Master User',
-        role: Role.ADMIN,
+        role: RoleValues.admin,
       };
       return true;
     }

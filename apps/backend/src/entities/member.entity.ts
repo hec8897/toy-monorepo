@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { Role } from '../auth/enums/role.enum';
+import { Role, RoleValues } from '@toy-monorepo/types';
 
 @Entity('members')
 export class Member {
@@ -23,7 +23,10 @@ export class Member {
   @Column({ type: 'text' })
   phone: string;
 
-  @Column({ type: 'text', default: Role.USER })
+  @Column({ type: 'text' })
+  email: string;
+
+  @Column({ type: 'text', default: RoleValues.user })
   role: Role;
 
   @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })

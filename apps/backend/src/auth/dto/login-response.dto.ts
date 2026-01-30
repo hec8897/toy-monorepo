@@ -1,4 +1,4 @@
-import { LoginResponse } from '@toy-monorepo/types';
+import { LoginResponse, Role } from '@toy-monorepo/types';
 
 export class LoginResponseDto implements LoginResponse {
   accessToken: string;
@@ -6,7 +6,8 @@ export class LoginResponseDto implements LoginResponse {
     id: string;
     username: string;
     name: string;
-    role: 'user' | 'admin';
+    email: string;
+    role: Role;
   };
 
   constructor(partial: Partial<LoginResponseDto>) {
