@@ -1,6 +1,7 @@
-import styles from './page.module.css';
-import { AuthStatus } from '@/shared/components/AuthStatus';
 import { AuthGuard } from '@/shared/components/AuthGuard';
+import { AuthStatus } from '@/shared/components/AuthStatus';
+
+import styles from './page.module.css';
 
 export default function Index() {
   return (

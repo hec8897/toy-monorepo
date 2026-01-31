@@ -2,8 +2,8 @@ import './global.css';
 
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
-import { QueryProvider } from '@/shared/providers/QueryProvider';
 import { AuthInitializer } from '@/shared/components/AuthInitializer';
+import { QueryProvider } from '@/shared/providers/QueryProvider';
 
 export const metadata = {
   title: 'Toy Monorepo Frontend',

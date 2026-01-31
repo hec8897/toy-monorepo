@@ -11,10 +11,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request as ExpressRequest } from 'express';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
+
 import { User } from '@toy-monorepo/types';
+
+import { AuthService } from './auth.service';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { LoginDto } from './dto/login.dto';
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 @Controller('auth')

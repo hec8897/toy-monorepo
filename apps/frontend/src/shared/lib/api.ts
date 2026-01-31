@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import {
   LoginRequest,
   LoginResponse,
@@ -7,7 +9,6 @@ import {
   User,
   UserSchema,
 } from '@toy-monorepo/types';
-import axios from 'axios';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';

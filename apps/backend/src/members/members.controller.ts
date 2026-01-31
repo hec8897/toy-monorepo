@@ -1,6 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { MembersService } from './members.service';
+
 import { MemberResponseDto } from './dto/member-response.dto';
+import { MembersService } from './members.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('members')
