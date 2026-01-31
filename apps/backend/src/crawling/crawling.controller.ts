@@ -1,7 +1,8 @@
-import { Controller, Get, Header, Post } from '@nestjs/common';
+import { Controller, Get, Header, Post, UseGuards } from '@nestjs/common';
 
 import { CrawlingService } from './crawling.service';
 import { CrawlResultDto, LatestRankingDto } from './dto/crawl-result.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('crawling')
 export class CrawlingController {
@@ -14,11 +15,13 @@ export class CrawlingController {
   }
 
   @Get('oliveyoung/best')
+  @UseGuards(JwtAuthGuard)
   async getLatestRanking(): Promise<LatestRankingDto> {
     return this.crawlingService.getLatestRanking();
   }
 
   @Post('oliveyoung/best')
+  @UseGuards(JwtAuthGuard)
   async crawlOliveyoungBest(): Promise<CrawlResultDto> {
     return this.crawlingService.crawlAndSave();
   }
