@@ -5,7 +5,8 @@ description: Git 커밋을 생성합니다. 변경사항 분석 후 Conventional
 
 # Git Commit
 
-현재 변경사항을 분석하고 Conventional Commits 스타일로 커밋을 생성합니다.
+현재 스테이징에 추가된 파일들 변경사항을 분석하고 Conventional Commits 스타일로 커밋을 생성합니다.
+현재 스테이징된 파일이 없으면 git add . 명령어로 전체 추가합니다.
 
 ## 실행 방법
 
