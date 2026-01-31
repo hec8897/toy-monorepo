@@ -12,9 +12,19 @@ description: GitHub Pull Request를 생성합니다. 변경사항 분석 후 PR 
 `/create-pr` 또는 `/create-pr <base-branch>`
 
 - 푸시가 안되어 있을 경우 푸시 진행
-- 이미 pr 이 열려있으면 기존 내용 중 수정 필요한 사항 수정
-- 인자 없이 실행: `develop` 브랜치를 base로 PR 생성
+- 이미 PR이 열려있으면 기존 내용 중 수정 필요한 사항 수정
+- **인자 없이 실행: Git Flow 전략에 따라 타겟 브랜치 자동 결정**
 - base-branch 지정: 해당 브랜치를 base로 PR 생성
+
+### 타겟 브랜치 자동 결정 (Git Flow)
+
+| 현재 브랜치 | 타겟 브랜치 | 설명           |
+| ----------- | ----------- | -------------- |
+| `feature/*` | `develop`   | 새 기능 개발   |
+| `release/*` | `main`      | 릴리스 준비    |
+| `hotfix/*`  | `main`      | 긴급 버그 수정 |
+| `develop`   | `main`      | 릴리스 PR      |
+| 기타        | `develop`   | 기본값         |
 
 ## PR 생성 절차
 
@@ -176,14 +186,6 @@ gh pr create --base <base-branch> --title "<title>" --body "$(cat <<'EOF'
 EOF
 )"
 ```
-
-## Git Flow 브랜치 전략
-
-| 브랜치 타입 | Base 브랜치 | PR 대상   |
-| ----------- | ----------- | --------- |
-| `feature/*` | `develop`   | `develop` |
-| `release/*` | `develop`   | `main`    |
-| `hotfix/*`  | `main`      | `main`    |
 
 ## 주의사항
 
