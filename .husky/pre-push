@@ -12,7 +12,7 @@ fi
 
 # Prettier 체크
 echo "🎨 Prettier 검사 중..."
-npx prettier --check "**/*.{ts,tsx,js,jsx,json,css,md}" --ignore-path .gitignore
+npx prettier --check "**/*.{ts,tsx,js,jsx,json,css,md}"
 if [ $? -ne 0 ]; then
   echo "❌ Prettier 검사 실패. 'npx prettier --write .' 명령어로 포맷팅 후 다시 시도하세요."
   exit 1

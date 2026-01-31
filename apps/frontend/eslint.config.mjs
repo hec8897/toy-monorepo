@@ -5,6 +5,9 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 export default [
   ...baseConfig,
   {
+    ignores: ['next-env.d.ts'],
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
       react: reactPlugin,

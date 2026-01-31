@@ -65,3 +65,14 @@ apps/backend/
 ├── .env.example         # 환경 변수 예제
 └── README.md            # 이 파일
 ```
+
+## TODO
+
+### 마스터 토큰 보안 강화
+
+현재 마스터 토큰은 `.env`에 평문으로 저장됩니다. 보안 강화를 위해 다음 작업이 필요합니다:
+
+- [ ] 마스터 토큰을 bcrypt로 해싱하여 저장
+- [ ] `.env`에는 해시값(`MASTER_TOKEN_HASH`)만 저장
+- [ ] 요청 시 입력된 토큰을 해싱하여 비교
+- [ ] 해시 생성 스크립트 추가 (`scripts/hash-master-token.js`)

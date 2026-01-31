@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
+import { Role, RoleValues } from '@toy-monorepo/types';
+
 @Entity('members')
 export class Member {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -21,6 +23,12 @@ export class Member {
 
   @Column({ type: 'text' })
   phone: string;
+
+  @Column({ type: 'text' })
+  email: string;
+
+  @Column({ type: 'text', default: RoleValues.user })
+  role: Role;
 
   @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
   createdAt: Date;

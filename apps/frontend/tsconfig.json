@@ -2,7 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
-
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@toy-monorepo/types": ["../../packages/types/src/index.ts"],
+      "@toy-monorepo/common": ["../../packages/common/src/index.ts"]
+    },
     "strict": true,
     "noEmit": true,
     "emitDeclarationOnly": false,
