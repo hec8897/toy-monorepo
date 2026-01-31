@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../auth/auth.module';
 import { getDatabaseConfig } from '../config/database.config';
+import { CrawlingModule } from '../crawling/crawling.module';
 import { MembersModule } from '../members/members.module';
 import { TablesModule } from '../tables/tables.module';
 
@@ -19,6 +20,7 @@ import { TablesModule } from '../tables/tables.module';
     TablesModule,
     MembersModule,
     AuthModule,
+    CrawlingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { Member } from '../entities/member.entity';
+import { Product } from '../entities/product.entity';
+import { RankingSnapshot } from '../entities/ranking-snapshot.entity';
 import { User } from '../entities/user.entity';
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
@@ -9,7 +11,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
     return {
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [Member, User],
+      entities: [Member, User, Product, RankingSnapshot],
       synchronize: process.env.NODE_ENV === 'development',
       ssl: { rejectUnauthorized: false }, // Supabase는 SSL 필수
       logging: process.env.NODE_ENV === 'development',
@@ -24,7 +26,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_DATABASE || 'postgres',
-    entities: [Member, User],
+    entities: [Member, User, Product, RankingSnapshot],
     synchronize: process.env.NODE_ENV === 'development',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     logging: process.env.NODE_ENV === 'development',
