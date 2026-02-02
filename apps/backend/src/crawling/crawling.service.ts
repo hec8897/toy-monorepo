@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { CrawlResultDto, LatestRankingDto } from './dto/crawl-result.dto';
+import { CrawlResultDto } from './dto/crawl-result.dto';
 import { OliveyoungCrawler } from './oliveyoung.crawler';
 import { Product } from '../entities/product.entity';
 import { RankingSnapshot } from '../entities/ranking-snapshot.entity';
@@ -100,46 +100,6 @@ export class CrawlingService {
         error: error instanceof Error ? error.message : '알 수 없는 오류',
       };
     }
-  }
-
-  async getLatestRanking(): Promise<LatestRankingDto> {
-    // 가장 최신 스냅샷 시간 조회
-    const latestSnapshots = await this.rankingSnapshotRepository.find({
-      order: { snapshotAt: 'DESC' },
-      select: ['snapshotAt'],
-      take: 1,
-    });
-
-    if (latestSnapshots.length === 0) {
-      return {
-        snapshotAt: null,
-        rankings: [],
-      };
-    }
-
-    const latestSnapshot = latestSnapshots[0];
-
-    // 해당 시간의 모든 랭킹 조회
-    const rankings = await this.rankingSnapshotRepository.find({
-      where: { snapshotAt: latestSnapshot.snapshotAt },
-      relations: ['product'],
-      order: { rank: 'ASC' },
-    });
-
-    return {
-      snapshotAt: latestSnapshot.snapshotAt.toISOString(),
-      rankings: rankings.map((r) => ({
-        rank: r.rank,
-        productCode: r.product.productCode,
-        name: r.product.name,
-        brandName: r.product.brandName,
-        price: Number(r.price),
-        originalPrice: r.originalPrice ? Number(r.originalPrice) : null,
-        discountRate: r.discountRate,
-        imageUrl: r.product.imageUrl,
-        productUrl: r.product.productUrl,
-      })),
-    };
   }
 
   getAdminPageHtml(): string {

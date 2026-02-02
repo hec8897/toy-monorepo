@@ -1,3 +1,6 @@
+/**
+ * 크롤링 결과 DTO (백엔드 전용)
+ */
 export class CrawlResultDto {
   success: boolean;
   message: string;
@@ -8,21 +11,4 @@ export class CrawlResultDto {
     snapshotAt: string;
   };
   error?: string;
-}
-
-export class RankingItemDto {
-  rank: number;
-  productCode: string;
-  name: string;
-  brandName: string;
-  price: number;
-  originalPrice: number | null;
-  discountRate: number | null;
-  imageUrl: string;
-  productUrl: string;
-}
-
-export class LatestRankingDto {
-  snapshotAt: string | null;
-  rankings: RankingItemDto[];
 }
