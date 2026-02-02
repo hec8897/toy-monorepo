@@ -1,17 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 
-export interface CrawledProduct {
-  rank: number;
-  productCode: string;
-  name: string;
-  brandName: string;
-  price: number;
-  originalPrice: number | null;
-  discountRate: number | null;
-  imageUrl: string;
-  productUrl: string;
-}
+import type { RankingItem } from '@toy-monorepo/types';
 
 @Injectable()
 export class OliveyoungCrawler {
@@ -19,7 +9,7 @@ export class OliveyoungCrawler {
   private readonly bestUrl =
     'https://www.oliveyoung.co.kr/store/main/getBestList.do';
 
-  async crawlBestRanking(): Promise<CrawledProduct[]> {
+  async crawlBestRanking(): Promise<RankingItem[]> {
     this.logger.log('브라우저 시작...');
     const browser = await puppeteer.launch({
       headless: true,
@@ -44,7 +34,7 @@ export class OliveyoungCrawler {
       this.logger.log('상품 정보 추출 중...');
 
       const products = await page.evaluate(() => {
-        const items: CrawledProduct[] = [];
+        const items: RankingItem[] = [];
         const productElements = document.querySelectorAll('.prd_info');
 
         productElements.forEach((element, index) => {
