@@ -2,16 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { rankingApi } from '../api/ranking.api';
-import { ServiceType } from '../types/service.types';
+import { queryKeys } from '@/shared/lib/queryKeys';
 
-/**
- * 서비스별 랭킹 쿼리 키 생성
- */
-export const getRankingQueryKey = (service: ServiceType) => [
-  'ranking',
-  service,
-];
+import { rankingApi } from '../api/ranking.api';
+
+import type { ServiceType } from '@toy-monorepo/types';
 
 /**
  * 서비스별 랭킹 데이터 조회 훅
@@ -19,7 +14,7 @@ export const getRankingQueryKey = (service: ServiceType) => [
  */
 export function useRankingQuery(service: ServiceType) {
   return useQuery({
-    queryKey: getRankingQueryKey(service),
+    queryKey: queryKeys.ranking.byService(service),
     queryFn: () => rankingApi.getLatestRanking(service),
   });
 }

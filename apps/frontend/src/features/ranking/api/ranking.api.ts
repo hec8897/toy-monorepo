@@ -1,7 +1,9 @@
 import { api } from '@/shared/lib/api';
+import { LatestRankingSchema, LatestRanking } from '@toy-monorepo/types';
 
-import { LatestRanking, LatestRankingSchema } from '../types/ranking.types';
-import { SERVICE_ENDPOINTS, ServiceType } from '../types/service.types';
+import { SERVICE_ENDPOINTS } from '../types/service.types';
+
+import type { ServiceType } from '@toy-monorepo/types';
 
 export const rankingApi = {
   /**

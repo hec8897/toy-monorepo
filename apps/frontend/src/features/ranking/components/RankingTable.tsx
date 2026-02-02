@@ -3,9 +3,9 @@
 import { Alert, Table, Typography } from 'antd';
 
 import { useRankingQuery } from '../hooks/useRankingQuery';
-import { RankingItem } from '../types/ranking.types';
-import { SERVICE_LABELS, ServiceType } from '../types/service.types';
+import { SERVICE_LABELS } from '../types/service.types';
 
+import type { RankingItem, ServiceType } from '@toy-monorepo/types';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Text, Link } = Typography;
@@ -62,7 +62,7 @@ export function RankingTable({ service }: RankingTableProps) {
     return (
       <Alert
         type="error"
-        message={`${SERVICE_LABELS[service]} 데이터를 불러오는데 실패했습니다.`}
+        title={`${SERVICE_LABELS[service]} 데이터를 불러오는데 실패했습니다.`}
       />
     );
   }
