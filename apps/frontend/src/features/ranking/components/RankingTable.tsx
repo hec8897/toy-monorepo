@@ -1,14 +1,12 @@
 'use client';
 
-import { Alert, Table, Typography } from 'antd';
+import { Alert } from 'antd';
 
+import { RankingTableView } from './RankingTableView';
 import { useRankingQuery } from '../hooks/useRankingQuery';
 import { SERVICE_LABELS } from '../types/service.types';
 
-import type { RankingItem, ServiceType } from '@toy-monorepo/types';
-import type { ColumnsType } from 'antd/es/table';
-
-const { Text, Link } = Typography;
+import type { ServiceType } from '@toy-monorepo/types';
 
 interface RankingTableProps {
   service: ServiceType;
@@ -16,47 +14,6 @@ interface RankingTableProps {
 
 export function RankingTable({ service }: RankingTableProps) {
   const { data, isLoading, error } = useRankingQuery(service);
-
-  const columns: ColumnsType<RankingItem> = [
-    {
-      title: '순위',
-      dataIndex: 'rank',
-      key: 'rank',
-      width: 70,
-      align: 'center',
-    },
-    {
-      title: '브랜드',
-      dataIndex: 'brandName',
-      key: 'brandName',
-      width: 120,
-    },
-    {
-      title: '상품명',
-      dataIndex: 'name',
-      key: 'name',
-      render: (name: string, record: RankingItem) => (
-        <Link href={record.productUrl} target="_blank">
-          {name}
-        </Link>
-      ),
-    },
-    {
-      title: '가격',
-      dataIndex: 'price',
-      key: 'price',
-      width: 100,
-      render: (price: number) => `${price.toLocaleString()}원`,
-    },
-    {
-      title: '할인율',
-      dataIndex: 'discountRate',
-      key: 'discountRate',
-      width: 80,
-      align: 'center',
-      render: (rate: number | null) => (rate ? `${rate}%` : '-'),
-    },
-  ];
 
   if (error) {
     return (
@@ -68,19 +25,10 @@ export function RankingTable({ service }: RankingTableProps) {
   }
 
   return (
-    <div>
-      {data?.snapshotAt && (
-        <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-          기준 시각: {new Date(data.snapshotAt).toLocaleString('ko-KR')}
-        </Text>
-      )}
-      <Table
-        columns={columns}
-        dataSource={data?.rankings}
-        rowKey="productCode"
-        loading={isLoading}
-        pagination={{ pageSize: 20 }}
-      />
-    </div>
+    <RankingTableView
+      rankings={data?.rankings ?? []}
+      snapshotAt={data?.snapshotAt ?? null}
+      loading={isLoading}
+    />
   );
 }
