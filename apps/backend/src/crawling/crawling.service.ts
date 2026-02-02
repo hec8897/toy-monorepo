@@ -143,7 +143,7 @@ export class CrawlingService {
   }
 
   getAdminPageHtml(): string {
-    const templatePath = join(__dirname, 'templates', 'admin.html');
+    const templatePath = join(__dirname, 'crawling', 'templates', 'admin.html');
     return readFileSync(templatePath, 'utf-8');
   }
 }
