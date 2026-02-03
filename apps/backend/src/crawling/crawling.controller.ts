@@ -6,6 +6,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 import { CrawlingService } from './crawling.service';
 import { CrawlResultDto } from './dto/crawl-result.dto';
@@ -37,7 +38,7 @@ export class CrawlingController {
   @Get('oliveyoung/best')
   @UseGuards(JwtAuthGuard)
   async getLatestRanking(
-    @Query() query: GetRankingQueryDto,
+    @Query(ZodValidationPipe) query: GetRankingQueryDto,
   ): Promise<LatestRanking> {
     const { date, page = 1, limit = 20 } = query;
     return this.rankingService.getRanking(date, { page, limit });

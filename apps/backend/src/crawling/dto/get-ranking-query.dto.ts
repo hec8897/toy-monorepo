@@ -1,24 +1,13 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
- * 랭킹 조회 Query 파라미터 DTO
+ * 랭킹 조회 Query 파라미터 스키마
  */
-export class GetRankingQueryDto {
-  @IsOptional()
-  @IsString()
-  date?: string;
+export const GetRankingQuerySchema = z.object({
+  date: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 20;
-}
+export class GetRankingQueryDto extends createZodDto(GetRankingQuerySchema) {}
