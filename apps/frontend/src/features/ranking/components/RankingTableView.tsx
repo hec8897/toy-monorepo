@@ -2,15 +2,18 @@
 
 import { Table, Typography } from 'antd';
 
-import type { RankingItem } from '@toy-monorepo/types';
-import type { ColumnsType } from 'antd/es/table';
+import { RankChangeBadge } from '@/features/ranking';
 
-const { Text, Link } = Typography;
+import type { RankingItem, PaginationMeta } from '@toy-monorepo/types';
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+
+const { Link } = Typography;
 
 interface RankingTableViewProps {
   rankings: RankingItem[];
-  snapshotAt: string | null;
   loading: boolean;
+  pagination: PaginationMeta;
+  onPageChange: (page: number) => void;
 }
 
 const columns: ColumnsType<RankingItem> = [
@@ -20,6 +23,15 @@ const columns: ColumnsType<RankingItem> = [
     key: 'rank',
     width: 70,
     align: 'center',
+  },
+  {
+    title: '변동',
+    key: 'rankChange',
+    width: 80,
+    align: 'center',
+    render: (_, record: RankingItem) => (
+      <RankChangeBadge rankChange={record.rankChange} isNew={record.isNew} />
+    ),
   },
   {
     title: '브랜드',
@@ -56,23 +68,26 @@ const columns: ColumnsType<RankingItem> = [
 
 export function RankingTableView({
   rankings,
-  snapshotAt,
   loading,
+  pagination,
+  onPageChange,
 }: RankingTableViewProps) {
+  const tablePagination: TablePaginationConfig = {
+    current: pagination.page,
+    pageSize: pagination.limit,
+    total: pagination.total,
+    showSizeChanger: false,
+    showTotal: (total) => `총 ${total}개`,
+    onChange: onPageChange,
+  };
+
   return (
-    <div>
-      {snapshotAt && (
-        <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-          기준 시각: {new Date(snapshotAt).toLocaleString('ko-KR')}
-        </Text>
-      )}
-      <Table
-        columns={columns}
-        dataSource={rankings}
-        rowKey="productCode"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
-      />
-    </div>
+    <Table
+      columns={columns}
+      dataSource={rankings}
+      rowKey="productCode"
+      loading={loading}
+      pagination={tablePagination}
+    />
   );
 }

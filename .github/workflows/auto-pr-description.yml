@@ -32,14 +32,27 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const prNumber = context.issue.number;
-            
+
             // PR 정보 가져오기
             const pr = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: prNumber
             });
-            
+
+            // 기존 body가 있으면 스킵 (빈 문자열이나 짧은 내용 제외)
+            const existingBody = pr.data.body || '';
+            const MIN_BODY_LENGTH = 50;
+
+            if (existingBody.trim().length >= MIN_BODY_LENGTH) {
+              console.log('PR already has a description. Skipping auto-generation.');
+              core.setOutput('skipped', 'true');
+              return existingBody;
+            }
+
+            console.log('Generating PR description...');
+            core.setOutput('skipped', 'false');
+
             // 커밋 목록 가져오기
             const commits = await github.rest.pulls.listCommits({
               owner,
@@ -159,13 +172,14 @@ jobs:
             return description;
 
       - name: Comment on PR
+        if: steps.generate.outputs.skipped != 'true'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
             const prNumber = context.issue.number;
-            
+
             await github.rest.issues.createComment({
               owner,
               repo,

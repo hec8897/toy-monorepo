@@ -1,19 +1,47 @@
 'use client';
 
-import { Alert } from 'antd';
+import { useState } from 'react';
 
-import { RankingTableView } from './RankingTableView';
-import { useRankingQuery } from '../hooks/useRankingQuery';
-import { SERVICE_LABELS } from '../types/service.types';
+import { Alert, Typography } from 'antd';
+
+import {
+  RankingFilterBar,
+  RankingTableView,
+  useRankingQuery,
+  useSnapshotsQuery,
+  SERVICE_LABELS,
+} from '@/features/ranking';
+import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
 
 import type { ServiceType } from '@toy-monorepo/types';
+
+const { Text } = Typography;
 
 interface RankingTableProps {
   service: ServiceType;
 }
 
 export function RankingTable({ service }: RankingTableProps) {
-  const { data, isLoading, error } = useRankingQuery(service);
+  const [selectedDate, setSelectedDate] = useState<string | undefined>();
+  const [page, setPage] = useState(1);
+
+  const { data: snapshotsData, isLoading: snapshotsLoading } =
+    useSnapshotsQuery(service);
+
+  const { data, isLoading, error } = useRankingQuery({
+    service,
+    date: selectedDate,
+    page,
+  });
+
+  const handleDateChange = (date: string | undefined) => {
+    setSelectedDate(date);
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   if (error) {
     return (
@@ -25,10 +53,26 @@ export function RankingTable({ service }: RankingTableProps) {
   }
 
   return (
-    <RankingTableView
-      rankings={data?.rankings ?? []}
-      snapshotAt={data?.snapshotAt ?? null}
-      loading={isLoading}
-    />
+    <div>
+      <RankingFilterBar
+        snapshots={snapshotsData?.snapshots ?? []}
+        selectedDate={selectedDate}
+        onDateChange={handleDateChange}
+        loading={snapshotsLoading}
+      />
+      <div>
+        {data?.snapshotAt && (
+          <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
+            기준 시각: {new Date(data?.snapshotAt).toLocaleString('ko-KR')}
+          </Text>
+        )}
+        <RankingTableView
+          rankings={data?.rankings ?? []}
+          loading={isLoading}
+          pagination={data?.pagination ?? DEFAULT_PAGINATION}
+          onPageChange={handlePageChange}
+        />
+      </div>
+    </div>
   );
 }

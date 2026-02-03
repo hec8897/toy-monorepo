@@ -10,10 +10,19 @@ export const SERVICE_LABELS: Record<ServiceType, string> = {
 };
 
 /**
- * 서비스별 API 엔드포인트
+ * 서비스별 랭킹 API 엔드포인트
  */
 export const SERVICE_ENDPOINTS: Record<ServiceType, string> = {
   oliveyoung: '/crawling/oliveyoung/best',
   // coupang: '/crawling/coupang/best',
   // amazon: '/crawling/amazon/best',
+};
+
+/**
+ * 서비스별 스냅샷 API 엔드포인트
+ */
+export const SERVICE_SNAPSHOT_ENDPOINTS: Record<ServiceType, string> = {
+  oliveyoung: '/crawling/oliveyoung/snapshots',
+  // coupang: '/crawling/coupang/snapshots',
+  // amazon: '/crawling/amazon/snapshots',
 };
