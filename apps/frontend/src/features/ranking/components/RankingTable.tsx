@@ -11,6 +11,7 @@ import {
   useSnapshotsQuery,
   SERVICE_LABELS,
 } from '@/features/ranking';
+import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
 
 import type { ServiceType } from '@toy-monorepo/types';
 
@@ -19,13 +20,6 @@ const { Text } = Typography;
 interface RankingTableProps {
   service: ServiceType;
 }
-
-const DEFAULT_PAGINATION = {
-  page: 1,
-  limit: 20,
-  total: 0,
-  totalPages: 0,
-};
 
 export function RankingTable({ service }: RankingTableProps) {
   const [selectedDate, setSelectedDate] = useState<string | undefined>();

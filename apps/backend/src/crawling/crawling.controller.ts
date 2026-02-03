@@ -9,6 +9,7 @@ import {
 
 import { CrawlingService } from './crawling.service';
 import { CrawlResultDto } from './dto/crawl-result.dto';
+import { GetRankingQueryDto } from './dto/get-ranking-query.dto';
 import { RankingService } from './ranking.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -36,14 +37,10 @@ export class CrawlingController {
   @Get('oliveyoung/best')
   @UseGuards(JwtAuthGuard)
   async getLatestRanking(
-    @Query('date') date?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() query: GetRankingQueryDto,
   ): Promise<LatestRanking> {
-    return this.rankingService.getRanking(date, {
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 20,
-    });
+    const { date, page = 1, limit = 20 } = query;
+    return this.rankingService.getRanking(date, { page, limit });
   }
 
   @Post('oliveyoung/best')
