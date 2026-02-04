@@ -11,7 +11,11 @@ import {
   SERVICE_SNAPSHOT_ENDPOINTS,
 } from '../types/service.types';
 
-import type { RankingQueryParams } from '../types/ranking.types';
+import type {
+  RankingQueryParams,
+  RankingSortField,
+  SortOrder,
+} from '../types/ranking.types';
 import type { ServiceType } from '@toy-monorepo/types';
 
 /**
@@ -20,7 +24,13 @@ import type { ServiceType } from '@toy-monorepo/types';
 export const rankingQuery = {
   key: (
     service: ServiceType,
-    params: { date?: string; page?: number; limit?: number },
+    params: {
+      date?: string;
+      page?: number;
+      limit?: number;
+      sortField?: RankingSortField;
+      sortOrder?: SortOrder;
+    },
   ) => ['ranking', service, params] as const,
 
   fetch: async (params: RankingQueryParams): Promise<LatestRanking> => {
@@ -30,6 +40,8 @@ export const rankingQuery = {
     if (params.date) queryParams.append('date', params.date);
     if (params.page) queryParams.append('page', String(params.page));
     if (params.limit) queryParams.append('limit', String(params.limit));
+    if (params.sortField) queryParams.append('sortField', params.sortField);
+    if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
 
     const response = await api.get(endpoint, {
       params: queryParams,

@@ -40,8 +40,13 @@ export class CrawlingController {
   async getLatestRanking(
     @Query(ZodValidationPipe) query: GetRankingQueryDto,
   ): Promise<LatestRanking> {
-    const { date, page = 1, limit = 20 } = query;
-    return this.rankingService.getRanking(date, { page, limit });
+    const { date, page = 1, limit = 20, sortField, sortOrder } = query;
+    const sort =
+      sortField && sortOrder
+        ? { field: sortField, order: sortOrder }
+        : undefined;
+
+    return this.rankingService.getRanking(date, { page, limit }, sort);
   }
 
   @Post('oliveyoung/best')

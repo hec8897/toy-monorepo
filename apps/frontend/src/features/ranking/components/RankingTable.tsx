@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import { Alert, Typography } from 'antd';
 
 import {
@@ -13,6 +11,9 @@ import {
 } from '@/features/ranking';
 import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
 
+import { useRankingFilters } from '../hooks/useRankingFilters';
+
+import type { RankingSort } from '../types/ranking.types';
 import type { ServiceType } from '@toy-monorepo/types';
 
 const { Text } = Typography;
@@ -22,25 +23,33 @@ interface RankingTableProps {
 }
 
 export function RankingTable({ service }: RankingTableProps) {
-  const [selectedDate, setSelectedDate] = useState<string | undefined>();
-  const [page, setPage] = useState(1);
+  const {
+    date,
+    page,
+    sortField,
+    sortOrder,
+    setPage,
+    handleDateChange,
+    handleSortChange,
+  } = useRankingFilters();
 
   const { data: snapshotsData, isLoading: snapshotsLoading } =
     useSnapshotsQuery(service);
 
   const { data, isLoading, error } = useRankingQuery({
     service,
-    date: selectedDate,
+    date: date ?? undefined,
     page,
+    sortField: sortField ?? undefined,
+    sortOrder: sortOrder ?? undefined,
   });
 
-  const handleDateChange = (date: string | undefined) => {
-    setSelectedDate(date);
-    setPage(1);
-  };
+  // RankingTableView용 어댑터
+  const sort: RankingSort | undefined =
+    sortField && sortOrder ? { field: sortField, order: sortOrder } : undefined;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
+  const onSortChange = (newSort: RankingSort | undefined) => {
+    handleSortChange(newSort?.field, newSort?.order);
   };
 
   if (error) {
@@ -56,7 +65,7 @@ export function RankingTable({ service }: RankingTableProps) {
     <div>
       <RankingFilterBar
         snapshots={snapshotsData?.snapshots ?? []}
-        selectedDate={selectedDate}
+        selectedDate={date ?? undefined}
         onDateChange={handleDateChange}
         loading={snapshotsLoading}
       />
@@ -70,7 +79,9 @@ export function RankingTable({ service }: RankingTableProps) {
           rankings={data?.rankings ?? []}
           loading={isLoading}
           pagination={data?.pagination ?? DEFAULT_PAGINATION}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
+          sort={sort}
+          onSortChange={onSortChange}
         />
       </div>
     </div>
