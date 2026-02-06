@@ -1,6 +1,7 @@
 import './global.css';
 
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 import { AuthInitializer } from '@/shared/components/AuthInitializer';
 import { QueryProvider } from '@/shared/providers/QueryProvider';
@@ -19,9 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryProvider>
-          <AuthInitializer>
-            <AntdRegistry>{children}</AntdRegistry>
-          </AuthInitializer>
+          <NuqsAdapter>
+            <AuthInitializer>
+              <AntdRegistry>{children}</AntdRegistry>
+            </AuthInitializer>
+          </NuqsAdapter>
         </QueryProvider>
       </body>
     </html>

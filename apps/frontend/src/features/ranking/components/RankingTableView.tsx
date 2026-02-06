@@ -105,15 +105,23 @@ export function RankingTableView({
     total: pagination.total,
     showSizeChanger: false,
     showTotal: (total) => `총 ${total}개`,
-    onChange: onPageChange,
   };
 
   const handleTableChange: TableProps<RankingItem>['onChange'] = (
-    _pagination,
+    paginationConfig,
     _filters,
     sorter,
   ) => {
-    // 배열이 아닌 단일 sorter 처리
+    // 페이지 변경 처리
+    if (
+      paginationConfig.current &&
+      paginationConfig.current !== pagination.page
+    ) {
+      onPageChange(paginationConfig.current);
+      return;
+    }
+
+    // 정렬 변경 처리
     const singleSorter = Array.isArray(sorter) ? sorter[0] : sorter;
 
     if (!singleSorter || !singleSorter.order) {
