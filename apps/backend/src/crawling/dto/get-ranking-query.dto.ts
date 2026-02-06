@@ -22,6 +22,7 @@ export const GetRankingQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   sortField: RankingSortFieldEnum.optional(),
   sortOrder: SortOrderEnum.optional(),
+  brand: z.string().optional(),
 });
 
 export class GetRankingQueryDto extends createZodDto(GetRankingQuerySchema) {}

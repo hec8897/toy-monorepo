@@ -5,7 +5,11 @@ import { Repository } from 'typeorm';
 import { RankingSnapshot } from '../entities/ranking-snapshot.entity';
 
 import type { RankingSortField, SortOrder } from './dto/get-ranking-query.dto';
-import type { LatestRanking, SnapshotList } from '@toy-monorepo/types';
+import type {
+  LatestRanking,
+  SnapshotList,
+  BrandList,
+} from '@toy-monorepo/types';
 
 @Injectable()
 export class RankingService {
@@ -33,15 +37,49 @@ export class RankingService {
   }
 
   /**
-   * 랭킹 조회 (날짜 파라미터 지원 + 순위 변동 계산 + 페이지네이션 + 정렬)
+   * 상품 2개 이상 보유한 브랜드 목록 조회
+   * @param date - 조회할 날짜 (YYYY-MM-DD), 미입력시 최신
+   */
+  async getBrandsWithMinProducts(date?: string): Promise<BrandList> {
+    const targetSnapshotAt = await this.getSnapshotAtByDate(date);
+
+    if (!targetSnapshotAt) {
+      return { brands: [] };
+    }
+
+    const brands = await this.rankingSnapshotRepository
+      .createQueryBuilder('snapshot')
+      .leftJoin('snapshot.product', 'product')
+      .select('product.brand_name', 'brandName')
+      .addSelect('COUNT(*)', 'productCount')
+      .where('snapshot.snapshot_at = :snapshotAt', {
+        snapshotAt: targetSnapshotAt,
+      })
+      .groupBy('product.brand_name')
+      .having('COUNT(*) >= 2')
+      .orderBy('product.brand_name', 'ASC')
+      .getRawMany<{ brandName: string; productCount: string }>();
+
+    return {
+      brands: brands.map((b) => ({
+        brandName: b.brandName,
+        productCount: Number(b.productCount),
+      })),
+    };
+  }
+
+  /**
+   * 랭킹 조회 (날짜 파라미터 지원 + 순위 변동 계산 + 페이지네이션 + 정렬 + 브랜드 필터)
    * @param date - 조회할 날짜 (YYYY-MM-DD), 미입력시 최신
    * @param pagination - 페이지네이션 옵션
    * @param sort - 정렬 옵션
+   * @param brand - 브랜드 필터
    */
   async getRanking(
     date?: string,
     pagination: { page: number; limit: number } = { page: 1, limit: 20 },
     sort?: { field: RankingSortField; order: SortOrder },
+    brand?: string,
   ): Promise<LatestRanking> {
     const { page, limit } = pagination;
 
@@ -72,18 +110,31 @@ export class RankingService {
       });
     }
 
-    // 4. 전체 개수 조회
-    const total = await this.rankingSnapshotRepository.count({
-      where: { snapshotAt: targetSnapshotAt },
-    });
+    // 4. 전체 개수 조회 (브랜드 필터 적용)
+    let total: number;
+    if (brand) {
+      total = await this.rankingSnapshotRepository
+        .createQueryBuilder('snapshot')
+        .leftJoin('snapshot.product', 'product')
+        .where('snapshot.snapshot_at = :snapshotAt', {
+          snapshotAt: targetSnapshotAt,
+        })
+        .andWhere('product.brand_name = :brand', { brand })
+        .getCount();
+    } else {
+      total = await this.rankingSnapshotRepository.count({
+        where: { snapshotAt: targetSnapshotAt },
+      });
+    }
 
-    // 5. 대상 스냅샷의 랭킹 조회 (정렬 및 페이지네이션 적용)
+    // 5. 대상 스냅샷의 랭킹 조회 (정렬 및 페이지네이션 + 브랜드 필터 적용)
     const rankings = await this.getRankingsWithSort(
       targetSnapshotAt,
       previousSnapshotAt,
       previousRankMap,
       pagination,
       sort,
+      brand,
     );
 
     // 6. 순위 변동 계산 및 응답 생성
@@ -127,18 +178,28 @@ export class RankingService {
     previousRankMap: Map<string, number>,
     pagination: { page: number; limit: number },
     sort?: { field: RankingSortField; order: SortOrder },
+    brand?: string,
   ): Promise<RankingSnapshot[]> {
     const { page, limit } = pagination;
 
     // 정렬 옵션이 없으면 기본 정렬 (rank ASC)
     if (!sort) {
-      return this.rankingSnapshotRepository.find({
-        where: { snapshotAt: targetSnapshotAt },
-        relations: ['product'],
-        order: { rank: 'ASC' },
-        skip: (page - 1) * limit,
-        take: limit,
-      });
+      const queryBuilder = this.rankingSnapshotRepository
+        .createQueryBuilder('snapshot')
+        .leftJoinAndSelect('snapshot.product', 'product')
+        .where('snapshot.snapshot_at = :snapshotAt', {
+          snapshotAt: targetSnapshotAt,
+        });
+
+      if (brand) {
+        queryBuilder.andWhere('product.brand_name = :brand', { brand });
+      }
+
+      return queryBuilder
+        .orderBy('snapshot.rank', 'ASC')
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getMany();
     }
 
     // rankChange 정렬은 특수 처리 필요 (계산 필드)
@@ -149,6 +210,7 @@ export class RankingService {
         previousRankMap,
         pagination,
         sort.order,
+        brand,
       );
     }
 
@@ -159,6 +221,10 @@ export class RankingService {
       .where('snapshot.snapshot_at = :snapshotAt', {
         snapshotAt: targetSnapshotAt,
       });
+
+    if (brand) {
+      queryBuilder.andWhere('product.brand_name = :brand', { brand });
+    }
 
     // 정렬 필드 매핑
     const sortFieldMap: Record<string, string> = {
@@ -186,25 +252,43 @@ export class RankingService {
     previousRankMap: Map<string, number>,
     pagination: { page: number; limit: number },
     order: SortOrder,
+    brand?: string,
   ): Promise<RankingSnapshot[]> {
     const { page, limit } = pagination;
 
     // 이전 스냅샷이 없으면 기본 정렬
     if (!previousSnapshotAt) {
-      return this.rankingSnapshotRepository.find({
-        where: { snapshotAt: targetSnapshotAt },
-        relations: ['product'],
-        order: { rank: 'ASC' },
-        skip: (page - 1) * limit,
-        take: limit,
-      });
+      const queryBuilder = this.rankingSnapshotRepository
+        .createQueryBuilder('snapshot')
+        .leftJoinAndSelect('snapshot.product', 'product')
+        .where('snapshot.snapshot_at = :snapshotAt', {
+          snapshotAt: targetSnapshotAt,
+        });
+
+      if (brand) {
+        queryBuilder.andWhere('product.brand_name = :brand', { brand });
+      }
+
+      return queryBuilder
+        .orderBy('snapshot.rank', 'ASC')
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getMany();
     }
 
-    // 모든 현재 랭킹을 조회
-    const allRankings = await this.rankingSnapshotRepository.find({
-      where: { snapshotAt: targetSnapshotAt },
-      relations: ['product'],
-    });
+    // 모든 현재 랭킹을 조회 (브랜드 필터 적용)
+    const queryBuilder = this.rankingSnapshotRepository
+      .createQueryBuilder('snapshot')
+      .leftJoinAndSelect('snapshot.product', 'product')
+      .where('snapshot.snapshot_at = :snapshotAt', {
+        snapshotAt: targetSnapshotAt,
+      });
+
+    if (brand) {
+      queryBuilder.andWhere('product.brand_name = :brand', { brand });
+    }
+
+    const allRankings = await queryBuilder.getMany();
 
     // rankChange 계산 및 정렬
     const rankingsWithChange = allRankings.map((r) => {
