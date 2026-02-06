@@ -26,3 +26,12 @@ export const SERVICE_SNAPSHOT_ENDPOINTS: Record<ServiceType, string> = {
   // coupang: '/crawling/coupang/snapshots',
   // amazon: '/crawling/amazon/snapshots',
 };
+
+/**
+ * 서비스별 브랜드 목록 API 엔드포인트
+ */
+export const SERVICE_BRANDS_ENDPOINTS: Record<ServiceType, string> = {
+  oliveyoung: '/crawling/oliveyoung/brands',
+  // coupang: '/crawling/coupang/brands',
+  // amazon: '/crawling/amazon/brands',
+};

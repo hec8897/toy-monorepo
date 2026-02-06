@@ -18,8 +18,11 @@ export function useRankingFilters() {
     parseAsStringEnum(sortOrders),
   );
 
-  const handleDateChange = (date: string | undefined) => {
-    setDate(date ?? null);
+  const [brand, setBrand] = useQueryState('brand');
+
+  const handleDateChange = (newDate: string | undefined) => {
+    setDate(newDate ?? null);
+    setBrand(null);
     setPage(1);
   };
 
@@ -28,13 +31,21 @@ export function useRankingFilters() {
     setSortOrder(order as SortOrder | null);
     setPage(1);
   };
+
+  const handleBrandChange = (newBrand: string | undefined) => {
+    setBrand(newBrand ?? null);
+    setPage(1);
+  };
+
   return {
     date,
     page,
     sortField,
     sortOrder,
+    brand,
     setPage,
     handleDateChange,
     handleSortChange,
+    handleBrandChange,
   };
 }
