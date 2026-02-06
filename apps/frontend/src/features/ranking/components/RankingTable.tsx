@@ -6,12 +6,10 @@ import {
   RankingFilterBar,
   RankingTableView,
   useRankingQuery,
-  useSnapshotsQuery,
   SERVICE_LABELS,
 } from '@/features/ranking';
 import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
 
-import { useBrandsQuery } from '../hooks/useBrandsQuery';
 import { useRankingFilters } from '../hooks/useRankingFilters';
 
 import type { RankingSort } from '../types/ranking.types';
@@ -24,25 +22,8 @@ interface RankingTableProps {
 }
 
 export function RankingTable({ service }: RankingTableProps) {
-  const {
-    date,
-    page,
-    sortField,
-    sortOrder,
-    brand,
-    setPage,
-    handleDateChange,
-    handleSortChange,
-    handleBrandChange,
-  } = useRankingFilters();
-
-  const { data: snapshotsData, isLoading: snapshotsLoading } =
-    useSnapshotsQuery(service);
-
-  const { data: brandsData, isLoading: brandsLoading } = useBrandsQuery(
-    service,
-    date ?? undefined,
-  );
+  const { date, page, sortField, sortOrder, brand, setPage, handleSortChange } =
+    useRankingFilters();
 
   const { data, isLoading, error } = useRankingQuery({
     service,
@@ -72,16 +53,7 @@ export function RankingTable({ service }: RankingTableProps) {
 
   return (
     <div>
-      <RankingFilterBar
-        snapshots={snapshotsData?.snapshots ?? []}
-        selectedDate={date ?? undefined}
-        onDateChange={handleDateChange}
-        loading={snapshotsLoading}
-        brands={brandsData?.brands}
-        selectedBrand={brand ?? undefined}
-        onBrandChange={handleBrandChange}
-        brandsLoading={brandsLoading}
-      />
+      <RankingFilterBar service={service} />
       <div>
         {data?.snapshotAt && (
           <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>

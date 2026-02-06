@@ -37,6 +37,14 @@ export function useRankingFilters() {
     setPage(1);
   };
 
+  const handleReset = () => {
+    setDate(null);
+    setBrand(null);
+    setSortField(null);
+    setSortOrder(null);
+    setPage(1);
+  };
+
   return {
     date,
     page,
@@ -47,5 +55,6 @@ export function useRankingFilters() {
     handleDateChange,
     handleSortChange,
     handleBrandChange,
+    handleReset,
   };
 }
