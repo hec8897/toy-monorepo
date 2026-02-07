@@ -10,6 +10,9 @@ import { AppSidebar } from './AppSidebar';
 
 const { Content } = Layout;
 
+const SIDER_WIDTH = 200;
+const SIDER_COLLAPSED_WIDTH = 80;
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -17,7 +20,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const siderWidth = collapsed ? 80 : 200;
+  const siderWidth = collapsed ? SIDER_COLLAPSED_WIDTH : SIDER_WIDTH;
 
   return (
     <AuthGuard>
