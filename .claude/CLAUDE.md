@@ -82,11 +82,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 주요 설정 파일
 
-| 파일                 | 용도                 |
-| -------------------- | -------------------- |
-| `nx.json`            | NX 워크스페이스 설정 |
-| `tsconfig.base.json` | TypeScript 기본 설정 |
-| `.eslintrc.json`     | ESLint 설정          |
+| 파일                                            | 용도                            |
+| ----------------------------------------------- | ------------------------------- |
+| `nx.json`                                       | NX 워크스페이스 설정            |
+| `tsconfig.base.json`                            | TypeScript 기본 설정            |
+| `.eslintrc.json`                                | ESLint 설정                     |
+| `apps/frontend/src/shared/config/navigation.ts` | 프론트엔드 라우트 경로 중앙관리 |
 
 ## Git Flow (요약)
 
