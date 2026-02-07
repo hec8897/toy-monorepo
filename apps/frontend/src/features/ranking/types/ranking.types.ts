@@ -29,6 +29,7 @@ export interface RankingQueryParams {
   limit?: number;
   sortField?: RankingSortField;
   sortOrder?: SortOrder;
+  brand?: string;
 }
 
 /**

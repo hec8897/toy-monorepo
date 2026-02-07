@@ -41,3 +41,20 @@ export const SnapshotListSchema = z.object({
   snapshots: z.array(SnapshotInfoSchema),
 });
 export type SnapshotList = z.infer<typeof SnapshotListSchema>;
+
+/**
+ * 브랜드 옵션 스키마 (필터용)
+ */
+export const BrandOptionSchema = z.object({
+  brandName: z.string(),
+  productCount: z.number(),
+});
+export type BrandOption = z.infer<typeof BrandOptionSchema>;
+
+/**
+ * 브랜드 목록 응답 스키마
+ */
+export const BrandListSchema = z.object({
+  brands: z.array(BrandOptionSchema),
+});
+export type BrandList = z.infer<typeof BrandListSchema>;

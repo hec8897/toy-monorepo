@@ -6,7 +6,6 @@ import {
   RankingFilterBar,
   RankingTableView,
   useRankingQuery,
-  useSnapshotsQuery,
   SERVICE_LABELS,
 } from '@/features/ranking';
 import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
@@ -23,18 +22,8 @@ interface RankingTableProps {
 }
 
 export function RankingTable({ service }: RankingTableProps) {
-  const {
-    date,
-    page,
-    sortField,
-    sortOrder,
-    setPage,
-    handleDateChange,
-    handleSortChange,
-  } = useRankingFilters();
-
-  const { data: snapshotsData, isLoading: snapshotsLoading } =
-    useSnapshotsQuery(service);
+  const { date, page, sortField, sortOrder, brand, setPage, handleSortChange } =
+    useRankingFilters();
 
   const { data, isLoading, error } = useRankingQuery({
     service,
@@ -42,6 +31,7 @@ export function RankingTable({ service }: RankingTableProps) {
     page,
     sortField: sortField ?? undefined,
     sortOrder: sortOrder ?? undefined,
+    brand: brand ?? undefined,
   });
 
   // RankingTableView용 어댑터
@@ -63,12 +53,7 @@ export function RankingTable({ service }: RankingTableProps) {
 
   return (
     <div>
-      <RankingFilterBar
-        snapshots={snapshotsData?.snapshots ?? []}
-        selectedDate={date ?? undefined}
-        onDateChange={handleDateChange}
-        loading={snapshotsLoading}
-      />
+      <RankingFilterBar service={service} />
       <div>
         {data?.snapshotAt && (
           <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
@@ -78,7 +63,10 @@ export function RankingTable({ service }: RankingTableProps) {
         <RankingTableView
           rankings={data?.rankings ?? []}
           loading={isLoading}
-          pagination={data?.pagination ?? DEFAULT_PAGINATION}
+          pagination={{
+            ...(data?.pagination ?? DEFAULT_PAGINATION),
+            page: page ?? 1,
+          }}
           onPageChange={setPage}
           sort={sort}
           onSortChange={onSortChange}
