@@ -46,11 +46,54 @@
     .stat { text-align: center; }
     .stat-value { font-size: 24px; font-weight: bold; color: #9bce26; }
     .stat-label { font-size: 12px; color: #999; }
+    .input-group { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .input-group input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .input-group input:focus { outline: none; border-color: #9bce26; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; }
+    .checkbox-group label { color: #666; font-size: 14px; }
+    .detail-info { margin-top: 16px; }
+    .detail-info .info-row {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .detail-info .info-label {
+      width: 100px;
+      color: #999;
+      font-size: 14px;
+    }
+    .detail-info .info-value {
+      flex: 1;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🛒 올리브영 크롤링 관리</h1>
+
+    <div class="card" id="authCard">
+      <h2>🔐 인증</h2>
+      <div id="loginForm">
+        <div class="input-group">
+          <input type="text" id="username" placeholder="아이디">
+          <input type="password" id="password" placeholder="비밀번호">
+          <button onclick="login()">로그인</button>
+        </div>
+      </div>
+      <div id="loggedIn" style="display: none;">
+        <span id="userInfo" style="color: #2e7d32; font-weight: 500;"></span>
+        <button onclick="logout()" style="background: #999; margin-left: 12px;">로그아웃</button>
+      </div>
+      <div id="authResult" class="result"></div>
+    </div>
 
     <div class="card">
       <h2>베스트 랭킹 크롤링</h2>
@@ -65,9 +108,95 @@
       <button onclick="fetchLatest()">📊 최신 데이터 보기</button>
       <div id="latestResult" class="result"></div>
     </div>
+
+    <div class="card">
+      <h2>🔍 상품 상세 크롤링 테스트</h2>
+      <div class="input-group">
+        <input type="text" id="productCode" placeholder="상품코드 입력 (예: A000000185498)">
+        <button id="detailCrawlBtn" onclick="crawlProductDetail()">🔍 상세 크롤링</button>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="asyncMode">
+        <label for="asyncMode">비동기 모드 (백그라운드 실행)</label>
+      </div>
+      <div id="detailResult" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h2>📋 저장된 상세 정보 조회</h2>
+      <div class="input-group">
+        <input type="text" id="productCodeQuery" placeholder="상품코드 입력">
+        <button onclick="getProductDetail()">📋 조회</button>
+      </div>
+      <div id="detailQueryResult" class="result"></div>
+    </div>
   </div>
 
   <script>
+    let authToken = localStorage.getItem('authToken');
+
+    // 페이지 로드 시 토큰 확인
+    if (authToken) {
+      showLoggedIn();
+    }
+
+    function getAuthHeaders() {
+      return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+    }
+
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const result = document.getElementById('authResult');
+
+      if (!username || !password) {
+        result.className = 'result error';
+        result.style.display = 'block';
+        result.textContent = '❌ 아이디와 비밀번호를 입력해주세요.';
+        return;
+      }
+
+      result.className = 'result loading';
+      result.textContent = '로그인 중...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.accessToken) {
+          authToken = data.accessToken;
+          localStorage.setItem('authToken', authToken);
+          result.className = 'result success';
+          result.innerHTML = `<strong>✅ 로그인 성공!</strong>`;
+          setTimeout(() => { result.style.display = 'none'; }, 2000);
+          showLoggedIn(data.user?.name || username);
+        } else {
+          result.className = 'result error';
+          result.textContent = '❌ ' + (data.message || '로그인 실패');
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = '❌ 요청 실패: ' + err.message;
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      localStorage.removeItem('authToken');
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('loggedIn').style.display = 'none';
+    }
+
+    function showLoggedIn(name = '사용자') {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('loggedIn').style.display = 'block';
+      document.getElementById('userInfo').textContent = `✅ ${name}님 로그인됨`;
+    }
+
     async function runCrawling() {
       const btn = document.getElementById('crawlBtn');
       const result = document.getElementById('result');
@@ -78,7 +207,10 @@
       result.textContent = '크롤링을 실행 중입니다. 잠시만 기다려주세요...';
 
       try {
-        const res = await fetch('/api/crawling/oliveyoung/best', { method: 'POST' });
+        const res = await fetch('/api/crawling/oliveyoung/best', {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
         const data = await res.json();
 
         if (data.success) {
@@ -119,7 +251,9 @@
       result.textContent = '데이터를 불러오는 중...';
 
       try {
-        const res = await fetch('/api/crawling/oliveyoung/best');
+        const res = await fetch('/api/crawling/oliveyoung/best', {
+          headers: getAuthHeaders()
+        });
         const data = await res.json();
 
         if (data.rankings.length === 0) {
@@ -143,6 +277,108 @@
               ${data.rankings.length > 10 ? '<p style="color: #999; margin-top: 8px;">... 외 ' + (data.rankings.length - 10) + '개 상품</p>' : ''}
             </div>
           `;
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = '❌ 조회 실패: ' + err.message;
+      }
+    }
+
+    async function crawlProductDetail() {
+      const productCode = document.getElementById('productCode').value.trim();
+      const asyncMode = document.getElementById('asyncMode').checked;
+      const btn = document.getElementById('detailCrawlBtn');
+      const result = document.getElementById('detailResult');
+
+      if (!productCode) {
+        result.className = 'result error';
+        result.style.display = 'block';
+        result.textContent = '❌ 상품코드를 입력해주세요.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ 크롤링 중...';
+      result.className = 'result loading';
+      result.textContent = asyncMode ? '비동기 크롤링을 시작합니다...' : '크롤링을 실행 중입니다...';
+
+      try {
+        const url = `/api/crawling/oliveyoung/products/${productCode}/detail${asyncMode ? '?async=true' : ''}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          result.className = 'result success';
+          if (data.status === 'processing') {
+            result.innerHTML = `<strong>✅ ${data.message}</strong>`;
+          } else {
+            result.innerHTML = `
+              <strong>✅ 크롤링 완료</strong>
+              <div class="detail-info">
+                <div class="info-row"><span class="info-label">상품코드</span><span class="info-value">${data.data.productCode}</span></div>
+                <div class="info-row"><span class="info-label">평점</span><span class="info-value">${data.data.rating ?? '-'}</span></div>
+                <div class="info-row"><span class="info-label">리뷰 수</span><span class="info-value">${data.data.reviewCount?.toLocaleString() ?? '-'}</span></div>
+                <div class="info-row"><span class="info-label">용량</span><span class="info-value">${data.data.volume ?? '-'}</span></div>
+                <div class="info-row"><span class="info-label">제조사</span><span class="info-value">${data.data.manufacturer ?? '-'}</span></div>
+                <div class="info-row"><span class="info-label">크롤링 시각</span><span class="info-value">${new Date(data.data.fetchedAt).toLocaleString('ko-KR')}</span></div>
+              </div>
+            `;
+          }
+        } else {
+          result.className = 'result error';
+          result.textContent = '❌ ' + (data.message || '크롤링 실패');
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = '❌ 요청 실패: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 상세 크롤링';
+      }
+    }
+
+    async function getProductDetail() {
+      const productCode = document.getElementById('productCodeQuery').value.trim();
+      const result = document.getElementById('detailQueryResult');
+
+      if (!productCode) {
+        result.className = 'result error';
+        result.style.display = 'block';
+        result.textContent = '❌ 상품코드를 입력해주세요.';
+        return;
+      }
+
+      result.className = 'result loading';
+      result.textContent = '조회 중...';
+
+      try {
+        const res = await fetch(`/api/crawling/oliveyoung/products/${productCode}/detail`, {
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+
+        if (data.success && data.data) {
+          result.className = 'result success';
+          result.innerHTML = `
+            <strong>✅ 조회 완료</strong>
+            <div class="detail-info">
+              <div class="info-row"><span class="info-label">상품코드</span><span class="info-value">${data.data.productCode}</span></div>
+              <div class="info-row"><span class="info-label">평점</span><span class="info-value">${data.data.rating ?? '-'}</span></div>
+              <div class="info-row"><span class="info-label">리뷰 수</span><span class="info-value">${data.data.reviewCount?.toLocaleString() ?? '-'}</span></div>
+              <div class="info-row"><span class="info-label">용량</span><span class="info-value">${data.data.volume ?? '-'}</span></div>
+              <div class="info-row"><span class="info-label">제조사</span><span class="info-value">${data.data.manufacturer ?? '-'}</span></div>
+              <div class="info-row"><span class="info-label">크롤링 시각</span><span class="info-value">${new Date(data.data.fetchedAt).toLocaleString('ko-KR')}</span></div>
+            </div>
+          `;
+        } else {
+          result.className = 'result';
+          result.style.display = 'block';
+          result.style.background = '#fff3e0';
+          result.style.color = '#e65100';
+          result.textContent = '📭 ' + (data.message || '저장된 상세 정보가 없습니다.');
         }
       } catch (err) {
         result.className = 'result error';
