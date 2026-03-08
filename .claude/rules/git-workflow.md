@@ -135,6 +135,16 @@ git commit -m "fix: Resolve JWT token expiration issue"
 | 머지 전략   | Squash & Merge                     |
 | CI          | GitHub Actions 통과 필수           |
 
+### 커밋 타입별 PR 대상 브랜치
+
+| 커밋 타입                                  | PR 대상   | 이유                               |
+| ------------------------------------------ | --------- | ---------------------------------- |
+| `feat`, `fix`, `refactor`, `test`, `style` | `develop` | 기능/버그는 develop 통해 통합      |
+| `chore`, `docs`                            | `main`    | 설정·문서는 develop 거칠 필요 없음 |
+| `hotfix/*` 브랜치                          | `main`    | 긴급 수정은 바로 main에 반영       |
+
+> `chore`, `docs` 타입은 `main`에 직접 PR 생성 가능.
+
 ### 브랜치 보호
 
 - `main`, `develop` 브랜치는 **직접 push 금지**
