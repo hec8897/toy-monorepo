@@ -1,4 +1,4 @@
-import { SectionLabel } from './About';
+import SectionLabel from './ui/SectionLabel';
 
 const PROJECTS = [
   {
