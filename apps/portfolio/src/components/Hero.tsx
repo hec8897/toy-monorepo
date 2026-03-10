@@ -22,7 +22,7 @@ export default function Hero() {
         <h1 className="animate-fade-up opacity-0 delay-200 text-5xl md:text-7xl font-bold mb-6 leading-tight">
           Hi, I&apos;m{' '}
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent animate-gradient">
-            Your Name
+            Dawoon
           </span>
         </h1>
 
