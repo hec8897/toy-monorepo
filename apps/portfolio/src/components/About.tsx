@@ -1,9 +1,9 @@
 import SectionLabel from './ui/SectionLabel';
 
 const STATS = [
-  { value: '3+', label: '년 경력' },
-  { value: '20+', label: '프로젝트' },
-  { value: '10+', label: '기술 스택' },
+  { value: '7+', label: '년 경력' },
+  { value: '5+', label: '프로젝트' },
+  { value: '20+', label: '기술 스택' },
 ];
 
 export default function About() {
@@ -26,18 +26,19 @@ export default function About() {
           {/* Text */}
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              개발을 즐기는{' '}
-              <span className="text-violet-400">프론트엔드 개발자</span>
+              팀에 실질적 기여를 중시하는
+              <span className="text-violet-400"> 개발자</span>
             </h2>
             <p className="text-gray-400 leading-relaxed mb-6">
-              안녕하세요! 저는 React와 Next.js를 주력으로 하는 프론트엔드
-              개발자입니다. 사용자가 직접 경험하는 인터페이스에 가장 큰 가치를
-              두며, 성능과 접근성을 고려한 코드를 작성합니다.
+              제로 베이스 환경에서 시작해 하나의 완성된 웹 서비스를 기획부터
+              개발까지 주도해 성공적으로 런칭한 경험이 있습니다. 그 과정에서
+              기획·디자인·마케팅·운영 등 다양한 직군과 긴밀히 협업하며 제품의 전
+              과정을 함께 고민했습니다.
             </p>
             <p className="text-gray-400 leading-relaxed mb-10">
-              새로운 기술을 빠르게 습득하고, 팀과 함께 성장하는 것을 즐깁니다.
-              클린 코드와 좋은 설계에 대한 끊임없는 고민으로 더 나은
-              소프트웨어를 만들어갑니다.
+              프론트엔드 개발자로, React 기반 UI 컴포넌트 구현과 퍼블리싱은 물론
+              효율적인 아키텍쳐 구조를 고민하고 안정적으로 운영하는 것을
+              중점으로 근무하였습니다.
             </p>
 
             {/* Stats */}
