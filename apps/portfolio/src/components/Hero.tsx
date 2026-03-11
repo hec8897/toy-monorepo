@@ -32,8 +32,8 @@ export default function Hero() {
         </p>
 
         <p className="animate-fade-up opacity-0 delay-400 text-base md:text-lg text-gray-500 max-w-xl mx-auto mb-10">
-          사용자 경험을 중심으로 생각하는 프론트엔드 개발자입니다. 아름답고 빠른
-          웹을 만들어갑니다.
+          사용자 경험과 비즈니스 임팩트에 집중하는 프론트엔드 중심 풀스택
+          개발자입니다.
         </p>
 
         <div className="animate-fade-up opacity-0 delay-500 flex flex-col sm:flex-row gap-4 justify-center">
