@@ -6,7 +6,7 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/out-tsc', '**/.next'],
+    ignores: ['**/dist', '**/out-tsc', '**/.next', 'scripts/check-secrets.js'],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
