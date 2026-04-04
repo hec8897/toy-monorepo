@@ -2,6 +2,7 @@
   "name": "toy-monorepo",
   "version": "1.0.0",
   "description": "토이프로젝트 모노레포",
+  "packageManager": "pnpm@10.33.0",
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
@@ -112,6 +113,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
+    "react-icons": "^5.6.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "typeorm": "^0.3.28",

@@ -1,8 +1,8 @@
 import './global.css';
 
 export const metadata = {
-  title: 'Portfolio',
-  description: 'My personal portfolio',
+  title: 'Portfolio | Frontend Developer',
+  description: '프론트엔드 개발자 포트폴리오',
 };
 
 export default function RootLayout({
@@ -11,8 +11,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>{children}</body>
+    <html lang="ko" className="dark">
+      <body className="bg-gray-950 text-white antialiased">{children}</body>
     </html>
   );
 }
