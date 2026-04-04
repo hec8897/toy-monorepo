@@ -1,0 +1,10 @@
+title = "Gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "허용 패턴"
+paths = [
+  '''\.env\.example$''',
+]
