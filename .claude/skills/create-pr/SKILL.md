@@ -28,6 +28,60 @@ description: GitHub Pull Request를 생성합니다. 변경사항 분석 후 PR 
 
 ## PR 생성 절차
 
+### 0. 작업 일지 작성 (필수)
+
+> 📋 규칙 상세: `.claude/rules/pr-workflow.md`
+
+PR 생성 전 `docs/work-logs/` 폴더에 작업 일지를 작성합니다.
+
+**파일명 형식**: `YYYY-MM-DD-{브랜치명}-{간단한-작업내용}.md`
+
+```
+예시: docs/work-logs/2026-04-04-feature-auth-login-jwt-구현.md
+```
+
+**작업 일지 템플릿:**
+
+```markdown
+# YYYY-MM-DD {브랜치명} 작업 일지
+
+## 📋 작업 개요
+
+- **브랜치**:
+- **작업 일자**:
+- **목적**:
+
+## ✅ 완료된 작업
+
+-
+
+## 🔧 주요 변경사항
+
+| 파일 | 변경 내용 |
+| ---- | --------- |
+| ...  | ...       |
+
+## 🐛 발생한 문제 & 해결
+
+-
+
+## 💡 기술적 결정사항 (왜 이 방법을 선택했는가)
+
+-
+
+## 🔗 관련 이슈/참고
+
+-
+```
+
+작업 일지 작성 후 커밋 & 푸시:
+
+```bash
+git add docs/work-logs/YYYY-MM-DD-{브랜치명}-{작업내용}.md
+git commit -m "docs: {브랜치명} 작업 일지 추가"
+git push
+```
+
 ### 1. 사전 검토 (review-pr 자동 실행)
 
 PR 생성 전 `/review-pr`을 실행하여 코드 품질을 검토합니다.
