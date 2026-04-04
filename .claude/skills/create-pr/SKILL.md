@@ -32,12 +32,12 @@ description: GitHub Pull Request를 생성합니다. 변경사항 분석 후 PR 
 
 > 📋 규칙 상세: `.claude/rules/pr-workflow.md`
 
-PR 생성 전 `docs/` 폴더에 작업 일지를 작성합니다.
+PR 생성 전 `docs/work-logs/` 폴더에 작업 일지를 작성합니다.
 
 **파일명 형식**: `YYYY-MM-DD-{브랜치명}-{간단한-작업내용}.md`
 
 ```
-예시: docs/2026-04-04-feature-auth-login-jwt-구현.md
+예시: docs/work-logs/2026-04-04-feature-auth-login-jwt-구현.md
 ```
 
 **작업 일지 템플릿:**
@@ -77,7 +77,7 @@ PR 생성 전 `docs/` 폴더에 작업 일지를 작성합니다.
 작업 일지 작성 후 커밋 & 푸시:
 
 ```bash
-git add docs/YYYY-MM-DD-{브랜치명}-{작업내용}.md
+git add docs/work-logs/YYYY-MM-DD-{브랜치명}-{작업내용}.md
 git commit -m "docs: {브랜치명} 작업 일지 추가"
 git push
 ```

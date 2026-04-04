@@ -74,11 +74,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 추가 문서 (Don't Delete)
 
-| 문서                     | 설명                                          |
-| ------------------------ | --------------------------------------------- |
-| `README.md`              | 프로젝트 개요, 기술 스택, 로드맵              |
-| `.claude/rules/*`        | 상황별 규칙 (백엔드, 프론트엔드, Git Flow 등) |
-| `apps/backend/README.md` | 백엔드 상세 문서                              |
+| 문서                     | 설명                                                                   |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `README.md`              | 프로젝트 개요, 기술 스택, 로드맵                                       |
+| `.claude/rules/*`        | 상황별 규칙 (백엔드, 프론트엔드, Git Flow 등)                          |
+| `apps/backend/README.md` | 백엔드 상세 문서                                                       |
+| `docs/work-logs/`        | 브랜치별 작업 일지 (PR 생성 전 자동 작성, 과거 작업 맥락 파악 시 참고) |
 
 ### 주요 설정 파일
 
