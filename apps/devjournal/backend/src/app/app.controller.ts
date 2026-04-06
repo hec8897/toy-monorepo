@@ -8,7 +8,7 @@ export class AppController {
 
   @Get('health')
   async health() {
-    const { data, error } = await this.supabase.anon
+    const { data, error } = await this.supabase.admin
       .from('concepts')
       .select('count')
       .limit(1);
