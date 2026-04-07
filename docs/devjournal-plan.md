@@ -639,24 +639,24 @@ cd toy-monorepo && claude "devjournal 백엔드 agent 모듈 만들어줘"
 
 ### 1주차 — 백엔드 & AI Core
 
-| 일차    | 작업                                                                      | 우선순위 |
-| ------- | ------------------------------------------------------------------------- | -------- |
-| Day 1–2 | Supabase 셋업, migrations 001~011 작성, pgvector HNSW 인덱스              | P0       |
-| Day 3   | NX 프로젝트 스캐폴딩, AppModule, SupabaseModule, TypeORM 엔티티           | P0       |
-| Day 4   | AgentService + Tool 1 (extract_concepts) + Ollama nomic-embed-text 임베딩 | P0       |
-| Day 5   | Tool 2 (search_connections + pgvector 쿼리) + Tool 4 (recommend_next)     | P1       |
-| Day 6   | SSE 스트리밍 (Subject 관리), POST /entries → 분석 파이프라인 연결         | P1       |
-| Day 7   | Tool 3 (build_mindmap 델타), GET /mindmap, GET /concepts, 에러 처리       | P1       |
+| 일차    | 작업                                                                                                                         | 우선순위 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Day 1–2 | Supabase 셋업, migrations 001~011 작성, pgvector HNSW 인덱스                                                                 | P0       |
+| Day 3   | 프론트엔드 NX 스캐폴딩 (devjournal-frontend) + AppModule, SupabaseModule 설정, TypeORM 엔티티 (백엔드 스캐폴딩은 Day 2 완료) | P0       |
+| Day 4   | AgentService + Tool 1 (extract_concepts) + Ollama nomic-embed-text 임베딩                                                    | P0       |
+| Day 5   | Tool 2 (search_connections + pgvector 쿼리) + Tool 4 (recommend_next)                                                        | P1       |
+| Day 6   | SSE 스트리밍 (Subject 관리), POST /entries → 분석 파이프라인 연결                                                            | P1       |
+| Day 7   | Tool 3 (build_mindmap 델타), GET /mindmap, GET /concepts, 에러 처리                                                          | P1       |
 
 ### 2주차 — 프론트엔드 & 앱화
 
-| 일차      | 작업                                                                              |
-| --------- | --------------------------------------------------------------------------------- |
-| Day 8     | NX 프론트 스캐폴딩, SupabaseProvider, AuthGuard, AppLayout, Supabase OAuth 로그인 |
-| Day 9     | Tiptap 에디터, useJournalAnalysis (SSE), AnalysisProgressPanel                    |
-| Day 10–11 | D3.js MindmapCanvas (useMindmapSimulation + useMindmapZoom), ConceptDetailDrawer  |
-| Day 12    | Dashboard (recharts ConceptGrowthChart, WeeklyHeatmap)                            |
-| Day 13–14 | 블로그 SSG + generateStaticParams + JSON-LD + PWA 설정                            |
+| 일차      | 작업                                                                                         |
+| --------- | -------------------------------------------------------------------------------------------- |
+| Day 8     | SupabaseProvider, AuthGuard, AppLayout, Supabase OAuth 로그인 (프론트 스캐폴딩은 Day 3 완료) |
+| Day 9     | Tiptap 에디터, useJournalAnalysis (SSE), AnalysisProgressPanel                               |
+| Day 10–11 | D3.js MindmapCanvas (useMindmapSimulation + useMindmapZoom), ConceptDetailDrawer             |
+| Day 12    | Dashboard (recharts ConceptGrowthChart, WeeklyHeatmap)                                       |
+| Day 13–14 | 블로그 SSG + generateStaticParams + JSON-LD + PWA 설정                                       |
 
 ---
 
