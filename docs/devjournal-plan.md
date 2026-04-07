@@ -643,10 +643,10 @@ cd toy-monorepo && claude "devjournal 백엔드 agent 모듈 만들어줘"
 | ------- | ---------------------------------------------------------------------------------------------------------------------------- | -------- |
 | Day 1–2 | Supabase 셋업, migrations 001~011 작성, pgvector HNSW 인덱스                                                                 | P0       |
 | Day 3   | 프론트엔드 NX 스캐폴딩 (devjournal-frontend) + AppModule, SupabaseModule 설정, TypeORM 엔티티 (백엔드 스캐폴딩은 Day 2 완료) | P0       |
-| Day 4   | AgentService + Tool 1 (extract_concepts) + Ollama nomic-embed-text 임베딩                                                    | P0       |
-| Day 5   | Tool 2 (search_connections + pgvector 쿼리) + Tool 4 (recommend_next)                                                        | P1       |
-| Day 6   | SSE 스트리밍 (Subject 관리), POST /entries → 분석 파이프라인 연결                                                            | P1       |
-| Day 7   | Tool 3 (build_mindmap 델타), GET /mindmap, GET /concepts, 에러 처리                                                          | P1       |
+| Day 4   | JournalModule CRUD (POST/GET/DELETE /api/entries) + ConceptsModule 기본 조회 API                                             | P0       |
+| Day 5   | AgentService + Tool 1 (extract_concepts) + Ollama nomic-embed-text 임베딩                                                    | P0       |
+| Day 6   | Tool 2 (search_connections + pgvector 쿼리) + Tool 4 (recommend_next)                                                        | P1       |
+| Day 7   | SSE 스트리밍 (Subject 관리), POST /entries → 분석 파이프라인 연결, Tool 3 (build_mindmap 델타)                               | P1       |
 
 ### 2주차 — 프론트엔드 & 앱화
 
