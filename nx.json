@@ -68,7 +68,8 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      }
+      },
+      "exclude": ["apps/devjournal/backend-e2e/**/*"]
     }
   ],
   "generators": {

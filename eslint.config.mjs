@@ -68,8 +68,23 @@ export default [
               group: 'external',
               position: 'before',
             },
+            {
+              pattern: '@toy-monorepo/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@devjournal/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@/**',
+              group: 'internal',
+              position: 'before',
+            },
           ],
-          pathGroupsExcludedImportTypes: ['react', 'react-dom', 'next'],
+          pathGroupsExcludedImportTypes: ['react', 'react-dom', 'next', '@toy-monorepo/**', '@devjournal/**', '@/**'],
           'newlines-between': 'always',
           alphabetize: {
             order: 'asc',

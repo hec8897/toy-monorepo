@@ -1,4 +1,3 @@
-import { api } from '@/shared/lib/api';
 import {
   BrandList,
   BrandListSchema,
@@ -7,6 +6,9 @@ import {
   SnapshotListSchema,
   SnapshotList,
 } from '@toy-monorepo/types';
+import type { ServiceType } from '@toy-monorepo/types';
+
+import { api } from '@/shared/lib/api';
 
 import {
   SERVICE_BRANDS_ENDPOINTS,
@@ -19,7 +21,6 @@ import type {
   RankingSortField,
   SortOrder,
 } from '../types/ranking.types';
-import type { ServiceType } from '@toy-monorepo/types';
 
 /**
  * 랭킹 조회 (key + fetch 통합)

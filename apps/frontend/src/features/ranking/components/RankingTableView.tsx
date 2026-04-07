@@ -2,12 +2,13 @@
 
 import { Table, Typography } from 'antd';
 
+import type { RankingItem, PaginationMeta } from '@toy-monorepo/types';
+
 import { RankChangeBadge } from '@/features/ranking';
 
 import { antdToApiSortOrder, apiToAntdSortOrder } from '../types/ranking.types';
 
 import type { RankingSort, RankingSortField } from '../types/ranking.types';
-import type { RankingItem, PaginationMeta } from '@toy-monorepo/types';
 import type { TableProps } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 

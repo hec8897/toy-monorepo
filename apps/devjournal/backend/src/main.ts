@@ -1,0 +1,21 @@
+import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+
+import { AppModule } from './app/app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api');
+
+  app.enableCors({
+    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    credentials: true,
+  });
+
+  const port = process.env.PORT ?? 3002;
+  await app.listen(port);
+  Logger.log(`🚀 DevJournal backend running on: http://localhost:${port}/api`);
+}
+
+bootstrap();
