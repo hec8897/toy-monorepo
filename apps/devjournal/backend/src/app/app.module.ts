@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
-
 import { SupabaseModule } from '@/supabase/supabase.module';
+
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
