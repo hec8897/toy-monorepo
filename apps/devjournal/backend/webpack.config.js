@@ -5,6 +5,11 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   externals: [nodeExternals()],
+  resolve: {
+    alias: {
+      '@': join(__dirname, 'src'),
+    },
+  },
   output: {
     path: join(__dirname, '../../../dist/apps/devjournal/backend'),
     clean: true,

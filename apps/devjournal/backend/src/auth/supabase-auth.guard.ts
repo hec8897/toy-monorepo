@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { SupabaseService } from '../supabase/supabase.service';
+import { SupabaseService } from '@/supabase/supabase.service';
 
 @Injectable()
 export class SupabaseAuthGuard implements CanActivate {
