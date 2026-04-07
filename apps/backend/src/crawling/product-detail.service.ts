@@ -2,14 +2,14 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { OliveyoungDetailCrawler } from './oliveyoung-detail.crawler';
-import { ProductDetail } from '../entities/product-detail.entity';
-import { Product } from '../entities/product.entity';
-
 import type {
   ProductDetailResponse,
   AsyncCrawlResponse,
 } from '@toy-monorepo/types';
+
+import { OliveyoungDetailCrawler } from './oliveyoung-detail.crawler';
+import { ProductDetail } from '../entities/product-detail.entity';
+import { Product } from '../entities/product.entity';
 
 @Injectable()
 export class ProductDetailService {

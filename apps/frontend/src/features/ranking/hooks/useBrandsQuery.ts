@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { brandsQuery } from '../api/ranking.api';
-
 import type { ServiceType } from '@toy-monorepo/types';
+
+import { brandsQuery } from '../api/ranking.api';
 
 /**
  * 서비스별 브랜드 목록 조회 훅

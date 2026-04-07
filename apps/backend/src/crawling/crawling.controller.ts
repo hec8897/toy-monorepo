@@ -9,6 +9,14 @@ import {
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
 
+import type {
+  AsyncCrawlResponse,
+  BrandList,
+  LatestRanking,
+  ProductDetailResponse,
+  SnapshotList,
+} from '@toy-monorepo/types';
+
 import { CrawlingService } from './crawling.service';
 import { CrawlResultDto } from './dto/crawl-result.dto';
 import { GetBrandsQueryDto } from './dto/get-brands-query.dto';
@@ -17,14 +25,6 @@ import { ProductDetailQueryDto } from './dto/product-detail-query.dto';
 import { ProductDetailService } from './product-detail.service';
 import { RankingService } from './ranking.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
-import type {
-  AsyncCrawlResponse,
-  BrandList,
-  LatestRanking,
-  ProductDetailResponse,
-  SnapshotList,
-} from '@toy-monorepo/types';
 
 @Controller('crawling')
 export class CrawlingController {

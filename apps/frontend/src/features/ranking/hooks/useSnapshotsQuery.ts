@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { snapshotsQuery } from '../api/ranking.api';
-
 import type { ServiceType } from '@toy-monorepo/types';
+
+import { snapshotsQuery } from '../api/ranking.api';
 
 /**
  * 서비스별 스냅샷 목록 조회 훅
