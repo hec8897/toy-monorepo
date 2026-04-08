@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
+import { useAuthStore } from '@/domains/auth/infrastructure/authStore';
 import { createClient } from '@/shared/lib/supabase';
-import { useAuthStore } from '@/shared/stores/authStore';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 

@@ -1,8 +1,7 @@
 import type { Entry } from '@devjournal/types';
 
-import { api } from '@/shared/lib/api';
-
-import type { CreateEntryInput } from '../types';
+import type { CreateEntryInput } from '@/domains/journal/domain/entry';
+import { api } from '@/shared/lib/httpClient';
 
 export const journalApi = {
   getEntries: () => api.get<Entry[]>('/entries').then((r) => r.data),

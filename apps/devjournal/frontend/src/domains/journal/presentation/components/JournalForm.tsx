@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 
-import type { CreateEntryInput } from '../types';
+import {
+  ENTRY_CONTENT_MIN_LENGTH,
+  isValidEntryContent,
+  type CreateEntryInput,
+} from '@/domains/journal/domain/entry';
 
 interface JournalFormProps {
   onSubmit: (data: CreateEntryInput) => void;
@@ -13,7 +17,7 @@ export function JournalForm({ onSubmit, isPending }: JournalFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const isDisabled = content.length < 10 || isPending;
+  const isDisabled = !isValidEntryContent(content) || isPending;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,18 +37,18 @@ export function JournalForm({ onSubmit, isPending }: JournalFormProps) {
         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <textarea
-        placeholder="오늘 배운 것을 기록하세요 (최소 10자)"
+        placeholder={`오늘 배운 것을 기록하세요 (최소 ${ENTRY_CONTENT_MIN_LENGTH}자)`}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         rows={6}
-        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-400">{content.length}자</span>
         <button
           type="submit"
           disabled={isDisabled}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isPending ? '저장 중...' : '저장'}
         </button>

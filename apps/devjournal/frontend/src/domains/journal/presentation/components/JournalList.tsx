@@ -1,27 +1,17 @@
 'use client';
 
-import type { AnalysisStatus, Entry } from '../types';
-
-const STATUS_BADGE = {
-  pending: 'bg-gray-100 text-gray-600',
-  processing: 'bg-blue-100 text-blue-600',
-  completed: 'bg-green-100 text-green-600',
-  failed: 'bg-red-100 text-red-600',
-} as const satisfies Record<AnalysisStatus, string>;
-
-const STATUS_LABEL: Record<AnalysisStatus, string> = {
-  pending: '대기 중',
-  processing: '분석 중',
-  completed: '완료',
-  failed: '실패',
-};
+import {
+  getAnalysisStatusBadgeStyle,
+  getAnalysisStatusLabel,
+  type Entry,
+} from '@/domains/journal/domain/entry';
 
 interface JournalListProps {
   entries: Entry[];
   isLoading: boolean;
   isError: boolean;
   onDelete: (id: string) => void;
-  isDeleting: boolean;
+  deletingId: string | undefined;
 }
 
 export function JournalList({
@@ -29,7 +19,7 @@ export function JournalList({
   isLoading,
   isError,
   onDelete,
-  isDeleting,
+  deletingId,
 }: JournalListProps) {
   if (isLoading) {
     return (
@@ -71,9 +61,9 @@ export function JournalList({
                 {new Date(entry.created_at).toLocaleDateString('ko-KR')}
               </span>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[entry.analysis_status]}`}
+                className={`rounded-full px-2 py-0.5 text-xs font-medium ${getAnalysisStatusBadgeStyle(entry.analysis_status)}`}
               >
-                {STATUS_LABEL[entry.analysis_status]}
+                {getAnalysisStatusLabel(entry.analysis_status)}
               </span>
             </div>
           </div>
@@ -83,7 +73,7 @@ export function JournalList({
                 onDelete(entry.id);
               }
             }}
-            disabled={isDeleting}
+            disabled={deletingId === entry.id}
             className="ml-4 shrink-0 text-xs text-red-400 hover:text-red-600 disabled:opacity-40"
           >
             삭제
