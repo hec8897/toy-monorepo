@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuthStore } from '@/shared/stores/authStore';
 
@@ -11,19 +13,19 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: '대시보드', icon: '📊' },
 ];
 
-// TODO: 인증 가드 (OAuth 설정 완료 후 주석 해제)
-// useEffect(() => {
-//   if (session === null) {
-//     router.replace('/login');
-//   }
-// }, [session, router]);
-
-// if (session === null) return null;
-
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const router = useRouter();
   const session = useAuthStore((s) => s.session);
+  const initialized = useAuthStore((s) => s.initialized);
+
+  useEffect(() => {
+    if (initialized && session === null) {
+      router.replace('/login');
+    }
+  }, [initialized, session, router]);
+
+  if (!initialized) return null;
 
   return (
     <div className="flex h-dvh bg-gray-50">
