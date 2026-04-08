@@ -639,20 +639,24 @@ cd toy-monorepo && claude "devjournal 백엔드 agent 모듈 만들어줘"
 
 > **방침 변경 (2026-04-07)**: 백엔드/프론트엔드 주차 분리 → **기능 단위(BE+FE 함께)** 방식으로 재편.
 > 각 Day마다 백엔드 API + 프론트엔드 UI를 함께 완성해 동작하는 기능을 매일 확인 가능.
+>
+> **방침 변경 (2026-04-08)**: Journal CRUD 테스트 후 인증 없이는 E2E 테스트 불가 확인.
+> Day 5를 **OAuth 인증 구현** (GitHub + Google)으로 교체. 기존 Day 5 이후 한 칸씩 밀림.
 
-| 일차      | 기능              | 내용                                                                 | 우선순위 |
-| --------- | ----------------- | -------------------------------------------------------------------- | -------- |
-| Day 1–2   | ✅ DB 셋업        | Supabase migrations 001~011, pgvector HNSW 인덱스                    | P0       |
-| Day 3     | ✅ 스캐폴딩       | NX BE+FE 스캐폴딩, SupabaseModule, Auth/Layout 기본 구현             | P0       |
-| Day 4     | **Journal CRUD**  | BE: entries CRUD API / FE: 목록·생성·삭제 UI (textarea)              | P0       |
-| Day 5     | **Concepts**      | BE: concepts 조회 API / FE: 개념 목록·검색 UI                        | P0       |
-| Day 6     | **AI Agent 1**    | AgentService + Tool 1 (extract_concepts) + Ollama 임베딩             | P0       |
-| Day 7     | **AI Agent 2–3**  | Tool 2 (search_connections + pgvector) + Tool 3 (build_mindmap 델타) | P1       |
-| Day 8     | **SSE + Agent 4** | Tool 4 (recommend_next) + SSE 스트리밍 + FE AnalysisProgressPanel    | P1       |
-| Day 9     | **Tiptap 에디터** | textarea → Tiptap v2 교체 + SSE 실시간 분석 연동                     | P1       |
-| Day 10–11 | **Mindmap**       | BE mindmap API / FE D3.js MindmapCanvas + ConceptDetailDrawer        | P1       |
-| Day 12    | **Dashboard**     | recharts ConceptGrowthChart, WeeklyHeatmap                           | P2       |
-| Day 13–14 | **Blog + PWA**    | SSG + SEO (JSON-LD, OG) + PWA manifest + sitemap                     | P2       |
+| 일차      | 기능              | 내용                                                                                  | 우선순위 |
+| --------- | ----------------- | ------------------------------------------------------------------------------------- | -------- |
+| Day 1–2   | ✅ DB 셋업        | Supabase migrations 001~011, pgvector HNSW 인덱스                                     | P0       |
+| Day 3     | ✅ 스캐폴딩       | NX BE+FE 스캐폴딩, SupabaseModule, Auth/Layout 기본 구현                              | P0       |
+| Day 4     | ✅ Journal CRUD   | BE: entries CRUD API / FE: 목록·생성·삭제 UI (textarea)                               | P0       |
+| Day 5     | **OAuth 인증**    | Supabase GitHub + Google OAuth / BE: SupabaseAuthGuard 실전 적용 / FE: 세션 가드 완성 | P0       |
+| Day 6     | **Concepts**      | BE: concepts 조회 API / FE: 개념 목록·검색 UI                                         | P0       |
+| Day 7     | **AI Agent 1**    | AgentService + Tool 1 (extract_concepts) + Ollama 임베딩                              | P0       |
+| Day 8     | **AI Agent 2–3**  | Tool 2 (search_connections + pgvector) + Tool 3 (build_mindmap 델타)                  | P1       |
+| Day 9     | **SSE + Agent 4** | Tool 4 (recommend_next) + SSE 스트리밍 + FE AnalysisProgressPanel                     | P1       |
+| Day 10    | **Tiptap 에디터** | textarea → Tiptap v2 교체 + SSE 실시간 분석 연동                                      | P1       |
+| Day 11–12 | **Mindmap**       | BE mindmap API / FE D3.js MindmapCanvas + ConceptDetailDrawer                         | P1       |
+| Day 13    | **Dashboard**     | recharts ConceptGrowthChart, WeeklyHeatmap                                            | P2       |
+| Day 14    | **Blog + PWA**    | SSG + SEO (JSON-LD, OG) + PWA manifest + sitemap                                      | P2       |
 
 ---
 
