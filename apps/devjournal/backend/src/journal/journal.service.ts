@@ -26,7 +26,8 @@ export class JournalService {
     }
 
     return (data ?? []).map(
-      ({ embedding: _e, deleted_at: _d, ...rest }) => rest,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ embedding, deleted_at, ...rest }) => rest,
     );
   }
 
@@ -46,7 +47,8 @@ export class JournalService {
       throw new NotFoundException(`Entry #${id} not found`);
     }
 
-    const { embedding: _e, deleted_at: _d, ...rest } = data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { embedding, deleted_at, ...rest } = data;
     return rest;
   }
 
@@ -69,7 +71,8 @@ export class JournalService {
       throw new InternalServerErrorException('Failed to create entry');
     }
 
-    const { embedding: _e, deleted_at: _d, ...rest } = data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { embedding, deleted_at, ...rest } = data;
     return rest;
   }
 
