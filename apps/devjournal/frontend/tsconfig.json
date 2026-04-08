@@ -19,7 +19,7 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
-      "@devjournal/types": ["../../types/index.ts"]
+      "@devjournal/types": ["../types/index.ts"]
     }
   },
   "include": [

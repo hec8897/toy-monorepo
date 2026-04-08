@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { JournalModule } from '@/journal/journal.module';
 import { SupabaseModule } from '@/supabase/supabase.module';
 
 import { AppController } from './app.controller';
@@ -12,6 +13,7 @@ import { AppController } from './app.controller';
       envFilePath: 'apps/devjournal/backend/.env',
     }),
     SupabaseModule,
+    JournalModule,
   ],
   controllers: [AppController],
 })

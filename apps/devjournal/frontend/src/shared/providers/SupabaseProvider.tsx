@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
+import { useAuthStore } from '@/domains/auth/infrastructure/authStore';
 import { createClient } from '@/shared/lib/supabase';
-import { useAuthStore } from '@/shared/stores/authStore';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -20,10 +20,12 @@ export function useSupabase() {
 export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const [supabase] = useState(() => createClient());
   const setSession = useAuthStore((s) => s.setSession);
+  const setInitialized = useAuthStore((s) => s.setInitialized);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setInitialized();
     });
 
     const {

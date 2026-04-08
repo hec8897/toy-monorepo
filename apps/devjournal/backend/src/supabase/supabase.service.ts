@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+import { Database } from './database.types';
+
 @Injectable()
 export class SupabaseService {
-  readonly anon: SupabaseClient;
-  readonly admin: SupabaseClient;
+  readonly anon: SupabaseClient<Database>;
+  readonly admin: SupabaseClient<Database>;
 
   constructor(private readonly config: ConfigService) {
     const url = this.config.getOrThrow<string>('SUPABASE_URL');
@@ -15,9 +17,9 @@ export class SupabaseService {
     );
 
     // RLS 적용 — 사용자 요청 시 사용
-    this.anon = createClient(url, anonKey);
+    this.anon = createClient<Database>(url, anonKey);
 
     // RLS 우회 — AI 분석 결과 쓰기 시 사용
-    this.admin = createClient(url, serviceRoleKey);
+    this.admin = createClient<Database>(url, serviceRoleKey);
   }
 }
