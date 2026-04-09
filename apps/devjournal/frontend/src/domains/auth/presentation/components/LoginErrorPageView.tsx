@@ -41,7 +41,7 @@ export function LoginErrorPageView({ reason }: Props) {
         </h1>
         <p className="mb-8 text-center text-sm text-gray-500">{message}</p>
         <button
-          onClick={() => router.push('/login')}
+          onClick={() => router.replace('/login')}
           className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-700"
         >
           다시 로그인
