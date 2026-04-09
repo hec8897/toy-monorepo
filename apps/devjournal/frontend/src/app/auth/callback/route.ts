@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}/journal`);
     }
+
+    const reason = error.code ?? 'server_error';
+    return NextResponse.redirect(`${origin}/login/error?reason=${reason}`);
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+  return NextResponse.redirect(`${origin}/login/error?reason=no_code`);
 }

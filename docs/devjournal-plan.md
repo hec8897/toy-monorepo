@@ -680,6 +680,49 @@ cd toy-monorepo && claude "devjournal 백엔드 agent 모듈 만들어줘"
 
 ---
 
+## Supabase Auth 설정 메모
+
+> **작성일:** 2026-04-09 — 도메인 연결 시 반드시 재확인 필요
+
+### OAuth Provider 설정 위치
+
+```
+Supabase Dashboard → Authentication → Providers
+```
+
+| Provider | 등록된 Callback URL                                         |
+| -------- | ----------------------------------------------------------- |
+| GitHub   | `https://vrhktnkdluqnsukbknwb.supabase.co/auth/v1/callback` |
+| Google   | (미설정 — 추후 추가 예정)                                   |
+
+### ⚠️ 도메인 연결 시 체크리스트
+
+Vercel/기타 호스팅에 도메인을 연결하면 **아래 3곳을 모두 업데이트**해야 합니다.
+
+**1. Supabase Redirect URL 허용 목록 추가**
+
+```
+Authentication → URL Configuration → Redirect URLs
+→ 추가: https://<your-domain>/auth/callback
+```
+
+현재 등록된 URL: `http://localhost:3000/auth/callback`
+
+**2. GitHub OAuth App 콜백 URL 유지**
+
+GitHub OAuth App의 `Authorization callback URL`은 Supabase URL(`https://vrhktnkdluqnsukbknwb.supabase.co/auth/v1/callback`)이라 도메인이 바뀌어도 **수정 불필요**.
+
+단, `Homepage URL`은 실제 도메인으로 업데이트하는 것이 좋음:
+
+```
+github.com → Settings → Developer settings → OAuth Apps → DevJournal (local)
+→ Homepage URL: https://<your-domain>
+```
+
+**3. (Google 추가 시) Google OAuth 리디렉션 URI는 Supabase URL이라 수정 불필요**
+
+---
+
 ## 시작 순서 (권장)
 
 1. **Supabase 프로젝트 생성** (supabase.com → Northeast Asia Seoul)

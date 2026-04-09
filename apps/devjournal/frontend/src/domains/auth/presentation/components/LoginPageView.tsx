@@ -10,6 +10,7 @@ export function LoginPageView() {
       provider: 'github',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'user:email',
       },
     });
   };
