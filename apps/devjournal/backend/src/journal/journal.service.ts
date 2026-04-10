@@ -14,7 +14,7 @@ export class JournalService {
   constructor(private readonly supabase: SupabaseService) {}
 
   async findAll(userId: string): Promise<EntryResponseDto[]> {
-    const { data, error } = await this.supabase.anon
+    const { data, error } = await this.supabase.admin
       .from('entries')
       .select('*')
       .eq('user_id', userId)
@@ -32,7 +32,7 @@ export class JournalService {
   }
 
   async findOne(userId: string, id: string): Promise<EntryResponseDto> {
-    const { data, error } = await this.supabase.anon
+    const { data, error } = await this.supabase.admin
       .from('entries')
       .select('*')
       .eq('id', id)
