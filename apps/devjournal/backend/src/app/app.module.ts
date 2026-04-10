@@ -11,7 +11,6 @@ import { AppController } from './app.controller';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/devjournal/backend/.env',
     }),
     SupabaseModule,
     JournalModule,
