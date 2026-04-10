@@ -34,21 +34,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm nx build devjournal-backend
+      - name: Build & Prune
+        run: pnpm nx run devjournal-backend:prune
 
-      - name: Upload build artifact to EC2
+      - name: Upload build artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEVJOURNAL_EC2_HOST }}
           username: ${{ secrets.DEVJOURNAL_EC2_USERNAME }}
           key: ${{ secrets.DEVJOURNAL_EC2_SSH_KEY }}
           port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
-          source: 'dist/apps/devjournal/backend/main.js'
+          source: 'dist/apps/devjournal/backend/'
           target: '/home/ubuntu/devjournal-backend/'
           strip_components: 4
 
-      - name: Restart PM2
+      - name: Install dependencies & Restart PM2
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEVJOURNAL_EC2_HOST }}
@@ -56,4 +56,6 @@ jobs:
           key: ${{ secrets.DEVJOURNAL_EC2_SSH_KEY }}
           port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
           script: |
+            cd /home/ubuntu/devjournal-backend
+            pnpm install --prod --frozen-lockfile
             pm2 reload devjournal-backend || pm2 start /home/ubuntu/devjournal-backend/ecosystem.config.js
