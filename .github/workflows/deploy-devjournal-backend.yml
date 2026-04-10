@@ -57,5 +57,5 @@ jobs:
           port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
           script: |
             cd /home/ubuntu/devjournal-backend
-            pnpm install --prod --frozen-lockfile
+            pnpm install --prod
             pm2 reload devjournal-backend || pm2 start /home/ubuntu/devjournal-backend/ecosystem.config.js
