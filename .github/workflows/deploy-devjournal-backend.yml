@@ -44,7 +44,7 @@ jobs:
           port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
           source: 'dist/apps/devjournal/backend/main.js'
           target: '/home/ubuntu/devjournal-backend/'
-          strip_components: 3
+          strip_components: 4
 
       - name: Restart PM2
         uses: appleboy/ssh-action@v1
