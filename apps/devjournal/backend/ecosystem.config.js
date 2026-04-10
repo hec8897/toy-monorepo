@@ -3,6 +3,7 @@ module.exports = {
     {
       name: 'devjournal-backend',
       script: '/home/ubuntu/devjournal-backend/main.js',
+      cwd: '/home/ubuntu/devjournal-backend',
       env: {
         NODE_ENV: 'production',
       },
