@@ -8,6 +8,8 @@ on:
       - 'apps/devjournal/backend/**'
       - 'packages/**'
       - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-devjournal-backend.yml'
+  workflow_dispatch:
 
 jobs:
   deploy:
