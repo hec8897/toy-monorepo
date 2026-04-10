@@ -69,4 +69,6 @@ jobs:
           script: |
             cd /home/ubuntu/devjournal-backend
             pnpm install --prod
-            pm2 startOrReload /home/ubuntu/devjournal-backend/ecosystem.config.js --update-env
+            pm2 delete devjournal-backend || true
+            pm2 start /home/ubuntu/devjournal-backend/ecosystem.config.js
+            pm2 save
