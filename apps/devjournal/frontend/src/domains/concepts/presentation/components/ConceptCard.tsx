@@ -17,7 +17,9 @@ export function ConceptCard({ concept }: ConceptCardProps) {
         </span>
       </div>
       {concept.description && (
-        <p className="text-xs text-gray-500 line-clamp-2">{concept.description}</p>
+        <p className="text-xs text-gray-500 line-clamp-2">
+          {concept.description}
+        </p>
       )}
       <p className="text-xs text-gray-400">사용 횟수: {concept.usage_count}</p>
     </div>

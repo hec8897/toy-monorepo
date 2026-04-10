@@ -1,6 +1,11 @@
 import type { Concept, ConceptCategory, MasteryLevel } from '@devjournal/types';
 
-export type { Concept, UserConcept, ConceptCategory, MasteryLevel } from '@devjournal/types';
+export type {
+  Concept,
+  UserConcept,
+  ConceptCategory,
+  MasteryLevel,
+} from '@devjournal/types';
 
 export type UserConceptWithConcept = {
   user_id: string;
@@ -14,7 +19,9 @@ export type UserConceptWithConcept = {
   concepts: Concept;
 };
 
-export function getMasteryLabel(level: MasteryLevel): '학습 중' | '익숙함' | '마스터' {
+export function getMasteryLabel(
+  level: MasteryLevel,
+): '학습 중' | '익숙함' | '마스터' {
   const labels: Record<MasteryLevel, '학습 중' | '익숙함' | '마스터'> = {
     learning: '학습 중',
     familiar: '익숙함',

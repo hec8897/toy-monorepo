@@ -1,4 +1,7 @@
-import { getMasteryLabel, getCategoryColor } from '@/domains/concepts/domain/concept';
+import {
+  getMasteryLabel,
+  getCategoryColor,
+} from '@/domains/concepts/domain/concept';
 import type { UserConceptWithConcept } from '@/domains/concepts/domain/concept';
 
 interface UserConceptListProps {
@@ -8,11 +11,14 @@ interface UserConceptListProps {
 
 const MASTERY_BADGE_STYLES: Record<string, string> = {
   '학습 중': 'bg-yellow-100 text-yellow-700',
-  '익숙함': 'bg-blue-100 text-blue-700',
-  '마스터': 'bg-green-100 text-green-700',
+  익숙함: 'bg-blue-100 text-blue-700',
+  마스터: 'bg-green-100 text-green-700',
 };
 
-export function UserConceptList({ userConcepts, isLoading }: UserConceptListProps) {
+export function UserConceptList({
+  userConcepts,
+  isLoading,
+}: UserConceptListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -24,9 +30,7 @@ export function UserConceptList({ userConcepts, isLoading }: UserConceptListProp
   }
 
   if (userConcepts.length === 0) {
-    return (
-      <p className="text-sm text-gray-400">학습한 개념이 없습니다.</p>
-    );
+    return <p className="text-sm text-gray-400">학습한 개념이 없습니다.</p>;
   }
 
   return (
@@ -41,7 +45,9 @@ export function UserConceptList({ userConcepts, isLoading }: UserConceptListProp
             className="rounded-md border border-gray-200 p-4 space-y-2"
           >
             <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-medium text-gray-900">{concept.name}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {concept.name}
+              </p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${getCategoryColor(concept.category)}`}
@@ -56,7 +62,9 @@ export function UserConceptList({ userConcepts, isLoading }: UserConceptListProp
               </div>
             </div>
             {concept.description && (
-              <p className="text-xs text-gray-500 line-clamp-2">{concept.description}</p>
+              <p className="text-xs text-gray-500 line-clamp-2">
+                {concept.description}
+              </p>
             )}
             <p className="text-xs text-gray-400">
               복습 횟수: {userConcept.review_count}

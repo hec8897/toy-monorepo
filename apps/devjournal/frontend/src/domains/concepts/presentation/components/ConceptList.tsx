@@ -7,7 +7,11 @@ interface ConceptListProps {
   isError: boolean;
 }
 
-export function ConceptList({ concepts, isLoading, isError }: ConceptListProps) {
+export function ConceptList({
+  concepts,
+  isLoading,
+  isError,
+}: ConceptListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -19,9 +23,7 @@ export function ConceptList({ concepts, isLoading, isError }: ConceptListProps) 
   }
 
   if (isError) {
-    return (
-      <p className="text-sm text-red-500">개념을 불러오지 못했습니다.</p>
-    );
+    return <p className="text-sm text-red-500">개념을 불러오지 못했습니다.</p>;
   }
 
   if (concepts.length === 0) {

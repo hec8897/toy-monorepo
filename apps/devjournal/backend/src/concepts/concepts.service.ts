@@ -16,7 +16,9 @@ export class ConceptsService {
   async findAll(limit: number, offset: number): Promise<ConceptResponseDto[]> {
     const { data, error } = await this.supabase.admin
       .from('concepts')
-      .select('id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at')
+      .select(
+        'id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at',
+      )
       .order('usage_count', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -45,7 +47,9 @@ export class ConceptsService {
   async search(query: string): Promise<ConceptResponseDto[]> {
     const { data, error } = await this.supabase.admin
       .from('concepts')
-      .select('id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at')
+      .select(
+        'id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at',
+      )
       .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
 
     if (error) {
@@ -58,7 +62,9 @@ export class ConceptsService {
   async findOne(id: string): Promise<ConceptResponseDto> {
     const { data, error } = await this.supabase.admin
       .from('concepts')
-      .select('id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at')
+      .select(
+        'id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at',
+      )
       .eq('id', id)
       .single();
 

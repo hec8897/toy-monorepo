@@ -16,18 +16,18 @@
 
 ## 🔧 주요 변경사항
 
-| 파일 | 변경 내용 |
-| ---- | --------- |
-| `backend/src/concepts/concepts.controller.ts` | 4개 엔드포인트 정의 |
-| `backend/src/concepts/concepts.service.ts` | findAll, findUserConcepts, search, findOne |
-| `backend/src/concepts/dto/concept-response.dto.ts` | embedding 제외 타입 |
-| `backend/src/concepts/dto/user-concept-response.dto.ts` | user_concepts + concepts join 타입 |
-| `backend/src/app/app.module.ts` | ConceptsModule 등록 |
-| `frontend/src/domains/concepts/` | domain / infrastructure / application / presentation 전체 |
-| `frontend/src/app/(app)/concepts/page.tsx` | 얇은 진입점 |
-| `frontend/src/domains/auth/.../AppLayout.tsx` | 개념 네비게이션 항목 추가 |
-| `.gitignore` | `*.tsbuildinfo` 추가 |
-| `docs/devjournal-plan.md` | 아이데이션 백로그 섹션 추가 |
+| 파일                                                    | 변경 내용                                                 |
+| ------------------------------------------------------- | --------------------------------------------------------- |
+| `backend/src/concepts/concepts.controller.ts`           | 4개 엔드포인트 정의                                       |
+| `backend/src/concepts/concepts.service.ts`              | findAll, findUserConcepts, search, findOne                |
+| `backend/src/concepts/dto/concept-response.dto.ts`      | embedding 제외 타입                                       |
+| `backend/src/concepts/dto/user-concept-response.dto.ts` | user_concepts + concepts join 타입                        |
+| `backend/src/app/app.module.ts`                         | ConceptsModule 등록                                       |
+| `frontend/src/domains/concepts/`                        | domain / infrastructure / application / presentation 전체 |
+| `frontend/src/app/(app)/concepts/page.tsx`              | 얇은 진입점                                               |
+| `frontend/src/domains/auth/.../AppLayout.tsx`           | 개념 네비게이션 항목 추가                                 |
+| `.gitignore`                                            | `*.tsbuildinfo` 추가                                      |
+| `docs/devjournal-plan.md`                               | 아이데이션 백로그 섹션 추가                               |
 
 ## 🐛 발생한 문제 & 해결
 

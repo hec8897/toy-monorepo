@@ -15,7 +15,11 @@ export function ConceptsPageView() {
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: allConcepts, isLoading: isAllLoading, isError: isAllError } = useGetConcepts();
+  const {
+    data: allConcepts,
+    isLoading: isAllLoading,
+    isError: isAllError,
+  } = useGetConcepts();
   const { data: userConcepts, isLoading: isUserLoading } = useGetUserConcepts();
   const {
     data: searchResults,
@@ -24,7 +28,9 @@ export function ConceptsPageView() {
   } = useSearchConcepts(searchQuery);
 
   const isSearching = searchQuery.length > 0;
-  const displayConcepts = isSearching ? (searchResults ?? []) : (allConcepts ?? []);
+  const displayConcepts = isSearching
+    ? (searchResults ?? [])
+    : (allConcepts ?? []);
   const isConceptsLoading = isSearching ? isSearchLoading : isAllLoading;
   const isConceptsError = isSearching ? isSearchError : isAllError;
 
