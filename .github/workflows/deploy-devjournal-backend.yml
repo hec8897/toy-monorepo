@@ -1,0 +1,57 @@
+name: Deploy — DevJournal Backend (dev)
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'apps/devjournal/backend/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  deploy:
+    name: Build & Deploy to EC2 (dev)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm nx build devjournal-backend
+
+      - name: Upload build artifact to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEVJOURNAL_EC2_HOST }}
+          username: ${{ secrets.DEVJOURNAL_EC2_USERNAME }}
+          key: ${{ secrets.DEVJOURNAL_EC2_SSH_KEY }}
+          port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
+          source: 'dist/apps/devjournal/backend/main.js'
+          target: '/home/ubuntu/devjournal-backend/'
+          strip_components: 3
+
+      - name: Restart PM2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEVJOURNAL_EC2_HOST }}
+          username: ${{ secrets.DEVJOURNAL_EC2_USERNAME }}
+          key: ${{ secrets.DEVJOURNAL_EC2_SSH_KEY }}
+          port: ${{ secrets.DEVJOURNAL_EC2_PORT }}
+          script: |
+            pm2 reload devjournal-backend || pm2 start /home/ubuntu/devjournal-backend/ecosystem.config.js
