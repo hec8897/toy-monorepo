@@ -17,11 +17,11 @@
 
 ## 🔧 주요 변경사항
 
-| 파일 | 변경 내용 |
-| ---- | --------- |
-| `.github/workflows/ci-devjournal.yml` | PR → develop 시 lint/build 검사 |
-| `.github/workflows/deploy-devjournal-backend.yml` | develop 머지 시 EC2 자동 배포 |
-| `apps/devjournal/backend/ecosystem.config.js` | PM2 프로세스 설정 |
+| 파일                                              | 변경 내용                       |
+| ------------------------------------------------- | ------------------------------- |
+| `.github/workflows/ci-devjournal.yml`             | PR → develop 시 lint/build 검사 |
+| `.github/workflows/deploy-devjournal-backend.yml` | develop 머지 시 EC2 자동 배포   |
+| `apps/devjournal/backend/ecosystem.config.js`     | PM2 프로세스 설정               |
 
 ## 🐛 발생한 문제 & 해결
 
