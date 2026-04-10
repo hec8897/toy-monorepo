@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/journal', label: '일기 작성', icon: '✏️' },
+  { href: '/concepts', label: '개념', icon: '💡' },
   { href: '/mindmap', label: '마인드맵', icon: '🕸️' },
   { href: '/dashboard', label: '대시보드', icon: '📊' },
 ];
