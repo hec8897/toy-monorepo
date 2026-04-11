@@ -2,8 +2,15 @@ import axios from 'axios';
 
 import { createClient } from './supabase';
 
+// 브라우저 환경(배포)에서는 Vercel rewrites(/api)를 통해 EC2로 프록시
+// 로컬 개발에서는 NEXT_PUBLIC_API_URL 직접 사용
+const baseURL =
+  typeof window !== 'undefined' && process.env.NODE_ENV === 'production'
+    ? '/api'
+    : process.env.NEXT_PUBLIC_API_URL;
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL,
   withCredentials: true,
 });
 
