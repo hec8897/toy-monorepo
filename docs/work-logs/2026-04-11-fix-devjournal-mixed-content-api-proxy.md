@@ -13,9 +13,9 @@
 
 ## 🔧 주요 변경사항
 
-| 파일 | 변경 내용 |
-| ---- | --------- |
-| `apps/devjournal/frontend/next.config.js` | `/api/*` → EC2 URL rewrites 추가 |
+| 파일                                                    | 변경 내용                             |
+| ------------------------------------------------------- | ------------------------------------- |
+| `apps/devjournal/frontend/next.config.js`               | `/api/*` → EC2 URL rewrites 추가      |
 | `apps/devjournal/frontend/src/shared/lib/httpClient.ts` | 배포 환경에서 baseURL을 `/api`로 변경 |
 
 ## 🐛 발생한 문제 & 해결
