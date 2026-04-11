@@ -2,18 +2,19 @@
 
 import { Alert, Typography } from 'antd';
 
+import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
+import type { ServiceType } from '@toy-monorepo/types';
+
 import {
   RankingFilterBar,
   RankingTableView,
   useRankingQuery,
   SERVICE_LABELS,
 } from '@/features/ranking';
-import { DEFAULT_PAGINATION } from '@toy-monorepo/types';
 
 import { useRankingFilters } from '../hooks/useRankingFilters';
 
 import type { RankingSort } from '../types/ranking.types';
-import type { ServiceType } from '@toy-monorepo/types';
 
 const { Text } = Typography;
 

@@ -8,6 +8,7 @@ build
 .next
 out
 next-env.d.ts
+*.tsbuildinfo
 
 # NX
 .nx/cache

@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { Button, Select, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 
+import type { ServiceType } from '@toy-monorepo/types';
+
 import { useBrandsQuery } from '../hooks/useBrandsQuery';
 import { useRankingFilters } from '../hooks/useRankingFilters';
 import { useSnapshotsQuery } from '../hooks/useSnapshotsQuery';
-
-import type { ServiceType } from '@toy-monorepo/types';
 
 const { Text } = Typography;
 

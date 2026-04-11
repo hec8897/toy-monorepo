@@ -137,13 +137,16 @@ git commit -m "fix: Resolve JWT token expiration issue"
 
 ### 커밋 타입별 PR 대상 브랜치
 
-| 커밋 타입                                  | PR 대상   | 이유                               |
-| ------------------------------------------ | --------- | ---------------------------------- |
-| `feat`, `fix`, `refactor`, `test`, `style` | `develop` | 기능/버그는 develop 통해 통합      |
-| `chore`, `docs`                            | `main`    | 설정·문서는 develop 거칠 필요 없음 |
-| `hotfix/*` 브랜치                          | `main`    | 긴급 수정은 바로 main에 반영       |
+| 커밋 타입                                  | PR 대상               | 이유                                                |
+| ------------------------------------------ | --------------------- | --------------------------------------------------- |
+| `feat`, `fix`, `refactor`, `test`, `style` | `develop`             | 기능/버그는 develop 통해 통합                       |
+| `chore`, `docs`                            | `develop` 또는 `main` | 프로젝트 관련 문서/설정은 develop, 전역 문서는 main |
+| `hotfix/*` 브랜치                          | `main`                | 긴급 수정은 바로 main에 반영                        |
 
-> `chore`, `docs` 타입은 `main`에 직접 PR 생성 가능.
+> `chore`, `docs` 타입은 변경 내용에 따라 타겟 브랜치를 선택:
+>
+> - 특정 프로젝트/기능과 연관된 문서 → `develop`
+> - 전역 설정·워크플로우 문서 → `main`
 
 ### 브랜치 보호
 

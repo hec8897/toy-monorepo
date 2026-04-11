@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { RankingSnapshot } from '../entities/ranking-snapshot.entity';
-
-import type { RankingSortField, SortOrder } from './dto/get-ranking-query.dto';
 import type {
   LatestRanking,
   SnapshotList,
   BrandList,
 } from '@toy-monorepo/types';
+
+import { RankingSnapshot } from '../entities/ranking-snapshot.entity';
+
+import type { RankingSortField, SortOrder } from './dto/get-ranking-query.dto';
 
 @Injectable()
 export class RankingService {

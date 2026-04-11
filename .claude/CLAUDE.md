@@ -6,12 +6,52 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **toy-monorepo**는 개인 토이프로젝트를 개발하는 모노레포로, 프론트엔드와 백엔드 모두 포함합니다.
 
-| 앱              | 설명                                                                   |
-| --------------- | ---------------------------------------------------------------------- |
-| `apps/frontend` | 병행 수입/수출 셀러 관리 앱 (매출, 상품 등록 자동화, 인기 상품 크롤링) |
-| `apps/backend`  | frontend의 API 서버                                                    |
+| 앱               | 설명                                                                   |
+| ---------------- | ---------------------------------------------------------------------- |
+| `apps/frontend`  | 병행 수입/수출 셀러 관리 앱 (매출, 상품 등록 자동화, 인기 상품 크롤링) |
+| `apps/backend`   | frontend의 API 서버                                                    |
+| `apps/portfolio` | 포트폴리오 앱                                                          |
 
 > 📋 기술 스택, 폴더 구조, 모듈 구조: `README.md` 참고
+
+## 모노레포 구조
+
+```
+toy-monorepo/
+├── apps/
+│   ├── backend/                    # NestJS API 서버 (:3001/api)
+│   │   ├── src/
+│   │   │   ├── app/                # 루트 모듈
+│   │   │   ├── auth/               # JWT 인증 (guards, strategies, decorators)
+│   │   │   ├── members/            # 회원 CRUD
+│   │   │   ├── crawling/           # 올리브영 크롤러 + 랭킹/상품 상세 서비스
+│   │   │   ├── tables/             # DB 테이블 조회
+│   │   │   ├── entities/           # TypeORM 엔티티 (member, user, product, ranking-snapshot 등)
+│   │   │   └── config/             # DB 설정 (database.config.ts)
+│   │   ├── scripts/                # 유틸 스크립트 (크롤링, 비밀번호 해싱 등)
+│   │   └── e2e/                    # E2E 테스트
+│   ├── frontend/                   # Next.js 앱 (:3000)
+│   │   └── src/
+│   │       ├── app/                # Next.js App Router
+│   │       │   ├── dashboard/      # 대시보드 (oliveyoung 랭킹 등)
+│   │       │   └── login/          # 로그인 페이지
+│   │       ├── features/           # 기능별 모듈 (API, hooks, types 포함)
+│   │       │   ├── auth/           # 로그인 폼, 훅, 스키마
+│   │       │   └── ranking/        # 랭킹 조회, 브랜드/스냅샷 훅
+│   │       └── shared/             # 앱 전역 공유 코드
+│   │           ├── components/     # 공통 컴포넌트 (레이아웃, AuthGuard 등)
+│   │           ├── config/         # 라우트 경로 중앙관리 (navigation.ts)
+│   │           ├── lib/            # API 클라이언트 (api.ts)
+│   │           ├── providers/      # React 프로바이더 (QueryProvider 등)
+│   │           └── stores/         # Zustand 스토어 (authStore)
+│   └── portfolio/                  # 포트폴리오 앱
+├── packages/
+│   ├── types/                      # 공유 TypeScript 타입 (@toy-monorepo/types)
+│   │   └── src/lib/                # auth, user, ranking, crawling, product-detail 타입
+│   └── common/                     # 공유 유틸리티 (@toy-monorepo/common)
+├── docs/work-logs/                 # 브랜치별 작업 일지
+└── nx.json                         # NX 워크스페이스 설정
+```
 
 ## 빌드/실행/테스트 명령
 
@@ -25,15 +65,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 빌드 & 테스트
 
-| 명령어                                     | 설명                   |
-| ------------------------------------------ | ---------------------- |
-| `npm run build`                            | 모든 프로젝트 빌드     |
-| `npm run build:backend` / `build:frontend` | 개별 빌드              |
-| `npm run affected:build`                   | 변경된 프로젝트만 빌드 |
-| `npm test`                                 | 모든 테스트 실행       |
-| `npm run test:backend` / `test:frontend`   | 개별 테스트            |
-| `npx nx run backend:e2e` / `frontend:e2e`  | E2E 테스트             |
-| `npm run lint`                             | 모든 프로젝트 린트     |
+| 명령어                                                               | 설명                   |
+| -------------------------------------------------------------------- | ---------------------- |
+| `npm run build`                                                      | 모든 프로젝트 빌드     |
+| `npm run build:backend` / `build:frontend`                           | 개별 빌드              |
+| `npm run affected:build`                                             | 변경된 프로젝트만 빌드 |
+| `npm test`                                                           | 모든 테스트 실행       |
+| `npm run test:backend` / `test:frontend`                             | 개별 테스트            |
+| `npx nx run backend:e2e` / `frontend:e2e`                            | E2E 테스트             |
+| `npx nx test backend --testFile=src/members/members.service.spec.ts` | 단일 파일 테스트       |
+| `npm run lint`                                                       | 모든 프로젝트 린트     |
 
 ### NX 유틸리티
 
@@ -74,11 +115,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 추가 문서 (Don't Delete)
 
-| 문서                     | 설명                                          |
-| ------------------------ | --------------------------------------------- |
-| `README.md`              | 프로젝트 개요, 기술 스택, 로드맵              |
-| `.claude/rules/*`        | 상황별 규칙 (백엔드, 프론트엔드, Git Flow 등) |
-| `apps/backend/README.md` | 백엔드 상세 문서                              |
+| 문서                     | 설명                                                                   |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `README.md`              | 프로젝트 개요, 기술 스택, 로드맵                                       |
+| `.claude/rules/*`        | 상황별 규칙 (백엔드, 프론트엔드, Git Flow 등)                          |
+| `apps/backend/README.md` | 백엔드 상세 문서                                                       |
+| `docs/work-logs/`        | 브랜치별 작업 일지 (PR 생성 전 자동 작성, 과거 작업 맥락 파악 시 참고) |
 
 ### 주요 설정 파일
 
@@ -86,7 +128,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | ----------------------------------------------- | ------------------------------- |
 | `nx.json`                                       | NX 워크스페이스 설정            |
 | `tsconfig.base.json`                            | TypeScript 기본 설정            |
-| `.eslintrc.json`                                | ESLint 설정                     |
+| `eslint.config.mjs`                             | ESLint 설정                     |
 | `apps/frontend/src/shared/config/navigation.ts` | 프론트엔드 라우트 경로 중앙관리 |
 
 ## Git Flow (요약)
