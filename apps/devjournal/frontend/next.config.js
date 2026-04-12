@@ -8,10 +8,12 @@ const { composePlugins, withNx } = require('@nx/next');
 const nextConfig = {
   nx: {},
   async rewrites() {
+    const backendUrl = process.env.BACKEND_URL;
+    if (!backendUrl) return [];
     return [
       {
         source: '/devjournal-api/:path*',
-        destination: `${process.env.BACKEND_URL}/api/:path*`,
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },
