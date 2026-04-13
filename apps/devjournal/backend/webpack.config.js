@@ -4,7 +4,7 @@ const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  externals: [nodeExternals()],
+  externals: [nodeExternals({ allowlist: ['@google/generative-ai'] })],
   resolve: {
     alias: {
       '@': join(__dirname, 'src'),
