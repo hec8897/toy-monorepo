@@ -13,6 +13,8 @@ import {
 import { Request } from 'express';
 
 import { SupabaseAuthGuard } from '@/auth/supabase-auth.guard';
+import { ConceptsService } from '@/concepts/concepts.service';
+import { EntryConceptResponseDto } from '@/concepts/dto/entry-concept-response.dto';
 
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { EntryResponseDto } from './dto/entry-response.dto';
@@ -25,7 +27,10 @@ type AuthenticatedRequest = Request & { user: User };
 @Controller('entries')
 @UseGuards(SupabaseAuthGuard)
 export class JournalController {
-  constructor(private readonly journalService: JournalService) {}
+  constructor(
+    private readonly journalService: JournalService,
+    private readonly conceptsService: ConceptsService,
+  ) {}
 
   @Get()
   findAll(@Req() req: AuthenticatedRequest): Promise<EntryResponseDto[]> {
@@ -38,6 +43,14 @@ export class JournalController {
     @Param('id') id: string,
   ): Promise<EntryResponseDto> {
     return this.journalService.findOne(req.user.id, id);
+  }
+
+  @Get(':id/concepts')
+  getEntryConcepts(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ): Promise<EntryConceptResponseDto[]> {
+    return this.conceptsService.findByEntry(id, req.user.id);
   }
 
   @Post()

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import {
   getAnalysisStatusBadgeStyle,
   getAnalysisStatusLabel,
@@ -52,7 +54,10 @@ export function JournalList({
           key={entry.id}
           className="flex items-start justify-between rounded-md border border-gray-200 p-4"
         >
-          <div className="min-w-0 flex-1">
+          <Link
+            href={`/journal/${entry.id}`}
+            className="min-w-0 flex-1 hover:opacity-80"
+          >
             <p className="truncate text-sm font-medium text-gray-900">
               {entry.title ?? entry.content.slice(0, 50)}
             </p>
@@ -66,7 +71,7 @@ export function JournalList({
                 {getAnalysisStatusLabel(entry.analysis_status)}
               </span>
             </div>
-          </div>
+          </Link>
           <button
             onClick={() => {
               if (window.confirm('정말 삭제하시겠어요?')) {

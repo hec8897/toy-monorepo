@@ -10,6 +10,7 @@ import { EmbeddingService } from '@/embedding/embedding.service';
 import { SupabaseService } from '@/supabase/supabase.service';
 
 import { ConceptResponseDto } from './dto/concept-response.dto';
+import { EntryConceptResponseDto } from './dto/entry-concept-response.dto';
 import { UserConceptResponseDto } from './dto/user-concept-response.dto';
 
 @Injectable()
@@ -84,6 +85,41 @@ export class ConceptsService {
     }
 
     return data;
+  }
+
+  async findByEntry(
+    entryId: string,
+    userId: string,
+  ): Promise<EntryConceptResponseDto[]> {
+    // entry 소유자 확인
+    const { data: entry, error: entryError } = await this.supabase.admin
+      .from('entries')
+      .select('id')
+      .eq('id', entryId)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .single();
+
+    if (entryError || !entry) {
+      throw new NotFoundException(`Entry #${entryId} not found`);
+    }
+
+    const { data, error } = await this.supabase.admin
+      .from('entry_concepts')
+      .select(
+        'confidence, concepts(id, name, name_lower, category, description, aliases, source, usage_count, created_at, updated_at)',
+      )
+      .eq('entry_id', entryId)
+      .order('confidence', { ascending: false });
+
+    if (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+
+    return (data ?? []).map((row) => ({
+      ...(row.concepts as object),
+      confidence: row.confidence,
+    })) as EntryConceptResponseDto[];
   }
 
   async upsertBatch(

@@ -3,7 +3,7 @@
 > Claude Code에 이 파일을 전달해 프로젝트 컨텍스트를 공유하세요.
 > "이 파일을 읽고 devjournal 프로젝트 셋업을 도와줘"
 >
-> **최종 업데이트:** 2026-04-05 (DB / Backend / Frontend / AI Agent 4개 에이전트 분석 반영)
+> **최종 업데이트:** 2026-04-17 (Day 8-D 완료 — JournalService fire-and-forget 분석 트리거 연결)
 
 ---
 
@@ -745,6 +745,8 @@ github.com → Settings → Developer settings → OAuth Apps → DevJournal (lo
 | 3   | **주제(토픽) 필수 입력** — 현재 `title`이 optional인데 required로 변경 검토                                                                                                                        | Day 4 수정    | 검토     |
 | 4   | **AI 기반 개념 제안 + 생각 도출** — 주제 입력 시 AI가 관련 개념을 먼저 제안하고, "이 개념에 대해 어떻게 생각하나요?" 형식의 질문으로 본인 생각을 끌어내어 일기가 자기 생각이 담긴 글이 되도록 유도 | Day 8 Agent   | 검토     |
 | 5   | **콘텐츠 내보내기** — 일기/개념 정리 후 외부 플랫폼 퍼블리시 지원: LinkedIn 포스팅 형식 변환, Velog/개인 블로그 마크다운 변환                                                                      | Day 15 Blog   | 검토     |
+| 6   | **일기 삭제 시 개념 카운터 연동** — 일기 삭제 시 연결된 `entry_concepts`의 `usage_count` 감소, 0이 되면 개념 자동 삭제 또는 보존 여부 선택 로직 필요                                               | 미정          | 검토     |
+| 7   | **모달 시스템 추가** — 삭제 확인, 개념 상세 보기 등 현재 `window.confirm` / tooltip으로 처리 중인 UI를 통합 모달 컴포넌트로 교체                                                                   | 미정          | 검토     |
 
 ---
 
