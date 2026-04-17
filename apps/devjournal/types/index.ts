@@ -78,6 +78,10 @@ export interface EntryConceptRow {
   confidence: number;
 }
 
+export type EntryConceptResponse = Omit<Concept, 'embedding'> & {
+  confidence: number;
+};
+
 export interface Connection {
   from_id: string;
   to_id: string;
