@@ -12,7 +12,8 @@ export function useGetEntryConcepts(
   return useQuery({
     queryKey: journalQueryKeys.concepts(id),
     queryFn: () => journalApi.getEntryConcepts(id),
-    enabled: !!id,
+    // entry 로딩 완료 후에만 concepts 요청 시작
+    enabled: !!id && analysisStatus !== undefined,
     // 분석이 완료되거나 실패하면 polling 중단
     refetchInterval:
       analysisStatus === 'completed' || analysisStatus === 'failed'
