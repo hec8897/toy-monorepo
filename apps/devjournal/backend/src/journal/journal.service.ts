@@ -1,9 +1,12 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 
+import { AgentService } from '@/agent/agent.service';
+import { ConceptsService } from '@/concepts/concepts.service';
 import { SupabaseService } from '@/supabase/supabase.service';
 
 import { CreateEntryDto } from './dto/create-entry.dto';
@@ -11,7 +14,13 @@ import { EntryResponseDto } from './dto/entry-response.dto';
 
 @Injectable()
 export class JournalService {
-  constructor(private readonly supabase: SupabaseService) {}
+  private readonly logger = new Logger(JournalService.name);
+
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly agentService: AgentService,
+    private readonly conceptsService: ConceptsService,
+  ) {}
 
   async findAll(userId: string): Promise<EntryResponseDto[]> {
     const { data, error } = await this.supabase.admin
@@ -73,7 +82,53 @@ export class JournalService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { embedding, deleted_at, ...rest } = data;
+
+    // fire-and-forget: 응답 반환 후 백그라운드에서 분석 파이프라인 실행
+    void this.triggerAnalysis(data.id, userId, dto.content);
+
     return rest;
+  }
+
+  private async triggerAnalysis(
+    entryId: string,
+    userId: string,
+    content: string,
+  ): Promise<void> {
+    await this.supabase.admin
+      .from('entries')
+      .update({ analysis_status: 'processing' })
+      .eq('id', entryId);
+
+    try {
+      const { concepts, entry_summary } =
+        await this.agentService.extractConcepts(content);
+
+      await this.conceptsService.upsertBatch(entryId, userId, concepts);
+
+      await this.supabase.admin
+        .from('entries')
+        .update({
+          analysis_status: 'completed',
+          analyzed_at: new Date().toISOString(),
+          summary: entry_summary,
+        })
+        .eq('id', entryId);
+
+      this.logger.log(
+        `분석 완료: entryId=${entryId}, concepts=${concepts.length}개`,
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.error(`분석 실패: entryId=${entryId}, error=${message}`);
+
+      await this.supabase.admin
+        .from('entries')
+        .update({
+          analysis_status: 'failed',
+          analysis_error: message,
+        })
+        .eq('id', entryId);
+    }
   }
 
   async remove(userId: string, id: string): Promise<void> {
