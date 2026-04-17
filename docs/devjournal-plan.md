@@ -3,7 +3,7 @@
 > Claude Code에 이 파일을 전달해 프로젝트 컨텍스트를 공유하세요.
 > "이 파일을 읽고 devjournal 프로젝트 셋업을 도와줘"
 >
-> **최종 업데이트:** 2026-04-05 (DB / Backend / Frontend / AI Agent 4개 에이전트 분석 반영)
+> **최종 업데이트:** 2026-04-17 (Day 8-D 완료 — JournalService fire-and-forget 분석 트리거 연결)
 
 ---
 
