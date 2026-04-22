@@ -8,9 +8,11 @@ import {
   Param,
   Post,
   Req,
+  Sse,
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { Observable } from 'rxjs';
 
 import { SupabaseAuthGuard } from '@/auth/supabase-auth.guard';
 import { ConceptsService } from '@/concepts/concepts.service';
@@ -51,6 +53,14 @@ export class JournalController {
     @Param('id') id: string,
   ): Promise<EntryConceptResponseDto[]> {
     return this.conceptsService.findByEntry(id, req.user.id);
+  }
+
+  @Sse(':id/analysis')
+  getAnalysisStream(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ): Promise<Observable<{ data: string; type?: string }>> {
+    return this.journalService.getAnalysisStream(id, req.user.id);
   }
 
   @Post()

@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { ConceptItem } from '@/agent/agent.service';
+import { ConceptItem, SimilarConcept } from '@/agent/agent.service';
 import { EmbeddingService } from '@/embedding/embedding.service';
 import { SupabaseService } from '@/supabase/supabase.service';
 
@@ -284,6 +284,64 @@ export class ConceptsService {
 
     this.logger.log(
       `upsertBatch done — new: ${insertedIds.length}, updated: ${updatedIds.length}, entry_concepts: ${entryConceptRows.length}`,
+    );
+  }
+
+  /**
+   * 방금 추출된 개념들과 pgvector 유사도 검색으로 연결 후보를 찾는다.
+   * 입력 개념들은 결과에서 제외 (자기 자신과의 연결 방지).
+   */
+  async findCandidateConnections(
+    conceptNames: string[],
+  ): Promise<SimilarConcept[]> {
+    if (conceptNames.length === 0) return [];
+
+    const nameLowers = conceptNames.map((n) => n.toLowerCase());
+
+    // 입력 개념들의 embedding 조회
+    const { data: sourceRows, error: sourceError } = await this.supabase.admin
+      .from('concepts')
+      .select('id, embedding')
+      .in('name_lower', nameLowers);
+
+    if (sourceError || !sourceRows?.length) return [];
+
+    // 입력 개념 ID 셋 (검색 결과에서 제외용)
+    const sourceIds = new Set(sourceRows.map((r) => r.id));
+
+    // 각 embedding으로 match_concepts 호출 후 후보 수집 (중복 제거)
+    const candidateMap = new Map<string, SimilarConcept>();
+    for (const row of sourceRows) {
+      const { data: similar, error: rpcError } = await this.supabase.admin.rpc(
+        'match_concepts',
+        {
+          query_embedding: row.embedding as string,
+          match_threshold: 0.65,
+          match_count: 10,
+        },
+      );
+
+      if (rpcError) {
+        this.logger.warn(
+          `match_concepts RPC failed for concept ${row.id}: ${rpcError.message}`,
+        );
+        continue;
+      }
+
+      for (const candidate of similar ?? []) {
+        if (!sourceIds.has(candidate.id) && !candidateMap.has(candidate.id)) {
+          candidateMap.set(candidate.id, {
+            id: candidate.id,
+            name: candidate.name,
+            category: candidate.category,
+            similarity: candidate.similarity,
+          });
+        }
+      }
+    }
+
+    return [...candidateMap.values()].sort(
+      (a, b) => b.similarity - a.similarity,
     );
   }
 }

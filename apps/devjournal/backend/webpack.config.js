@@ -6,6 +6,7 @@ module.exports = {
   resolve: {
     alias: {
       '@': join(__dirname, 'src'),
+      '@devjournal/types': join(__dirname, '../types/index.ts'),
     },
   },
   output: {

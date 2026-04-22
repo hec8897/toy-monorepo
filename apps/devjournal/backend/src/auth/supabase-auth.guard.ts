@@ -31,8 +31,15 @@ export class SupabaseAuthGuard implements CanActivate {
   }
 
   private extractToken(request: Request): string | null {
+    // 1. Authorization: Bearer <token> 헤더 (일반 API 요청)
     const authHeader = request.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) return null;
-    return authHeader.slice(7);
+    if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+
+    // 2. ?token= 쿼리 파라미터 (EventSource는 커스텀 헤더 미지원)
+    const queryToken = (request.query as Record<string, string | undefined>)
+      .token;
+    if (queryToken) return queryToken;
+
+    return null;
   }
 }
