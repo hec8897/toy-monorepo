@@ -5,8 +5,10 @@ import Link from 'next/link';
 import {
   useGetEntry,
   useGetEntryConcepts,
+  useJournalAnalysis,
 } from '@/domains/journal/application';
 
+import { AnalysisProgressPanel } from './components/AnalysisProgressPanel';
 import { EntryContent } from './components/EntryContent';
 import { LearnedConceptsSection } from './components/LearnedConceptsSection';
 
@@ -20,6 +22,11 @@ export function EntryDetailPageView({ entryId }: EntryDetailPageViewProps) {
     entryId,
     entry?.analysis_status,
   );
+  const analysisState = useJournalAnalysis(entryId, entry?.analysis_status);
+
+  const isAnalyzing =
+    entry?.analysis_status === 'pending' ||
+    entry?.analysis_status === 'processing';
 
   if (isLoading) {
     return (
@@ -52,11 +59,17 @@ export function EntryDetailPageView({ entryId }: EntryDetailPageViewProps) {
 
       <EntryContent entry={entry} />
 
-      <LearnedConceptsSection
-        status={entry.analysis_status}
-        concepts={concepts}
-        isLoading={isConceptsLoading}
-      />
+      {/* 분석 진행 중: SSE 실시간 패널 */}
+      {isAnalyzing && <AnalysisProgressPanel analysisState={analysisState} />}
+
+      {/* 분석 완료: 개념 목록 */}
+      {!isAnalyzing && (
+        <LearnedConceptsSection
+          status={entry.analysis_status}
+          concepts={concepts}
+          isLoading={isConceptsLoading}
+        />
+      )}
     </div>
   );
 }
