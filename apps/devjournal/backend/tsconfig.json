@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@devjournal/types": ["../types/index.ts"]
     }
   }
 }
