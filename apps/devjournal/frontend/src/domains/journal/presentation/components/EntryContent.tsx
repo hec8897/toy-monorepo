@@ -1,3 +1,6 @@
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+
 import {
   getAnalysisStatusBadgeStyle,
   getAnalysisStatusLabel,
@@ -8,7 +11,18 @@ interface EntryContentProps {
   entry: Entry;
 }
 
+marked.setOptions({ gfm: true, breaks: true });
+
+function renderMarkdown(content: string): string {
+  const rawHtml = marked.parse(content, { async: false }) as string;
+  return DOMPurify.sanitize(rawHtml, {
+    ADD_ATTR: ['target', 'rel'],
+  });
+}
+
 export function EntryContent({ entry }: EntryContentProps) {
+  const html = renderMarkdown(entry.content);
+
   return (
     <div className="space-y-6">
       {/* 헤더 */}
@@ -40,10 +54,8 @@ export function EntryContent({ entry }: EntryContentProps) {
         </div>
       )}
 
-      {/* 본문 */}
-      <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">
-        {entry.content}
-      </p>
+      {/* 본문 (마크다운) */}
+      <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
 }

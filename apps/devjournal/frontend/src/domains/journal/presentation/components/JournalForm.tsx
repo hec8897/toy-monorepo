@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 import {
   ENTRY_CONTENT_MIN_LENGTH,
-  isValidEntryContent,
   type CreateEntryInput,
 } from '@/domains/journal/domain/entry';
+
+import { TiptapEditor } from './TiptapEditor';
 
 interface JournalFormProps {
   onSubmit: (data: CreateEntryInput) => void;
@@ -15,20 +16,23 @@ interface JournalFormProps {
 
 export function JournalForm({ onSubmit, isPending }: JournalFormProps) {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [markdown, setMarkdown] = useState('');
+  const [plainLength, setPlainLength] = useState(0);
 
-  const isDisabled = !isValidEntryContent(content) || isPending;
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (isDisabled) return;
-    onSubmit({ content, title: title || undefined });
-    setTitle('');
-    setContent('');
-  }
+  const isDisabled = plainLength < ENTRY_CONTENT_MIN_LENGTH || isPending;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (isDisabled) return;
+        onSubmit({ content: markdown, title: title || undefined });
+        setTitle('');
+        setMarkdown('');
+        setPlainLength(0);
+      }}
+      className="space-y-3"
+    >
       <input
         type="text"
         placeholder="제목 (선택)"
@@ -36,15 +40,16 @@ export function JournalForm({ onSubmit, isPending }: JournalFormProps) {
         onChange={(e) => setTitle(e.target.value)}
         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <textarea
+      <TiptapEditor
+        markdown={markdown}
+        onChange={(md, text) => {
+          setMarkdown(md);
+          setPlainLength(text.length);
+        }}
         placeholder={`오늘 배운 것을 기록하세요 (최소 ${ENTRY_CONTENT_MIN_LENGTH}자)`}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        rows={6}
-        className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">{content.length}자</span>
+        <span className="text-xs text-gray-400">{plainLength}자</span>
         <button
           type="submit"
           disabled={isDisabled}
