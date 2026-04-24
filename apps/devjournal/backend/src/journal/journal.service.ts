@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -177,6 +178,34 @@ export class JournalService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async retryAnalysis(userId: string, entryId: string): Promise<void> {
+    const { data: entry, error } = await this.supabase.admin
+      .from('entries')
+      .select('id, analysis_status, content')
+      .eq('id', entryId)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .single();
+
+    if (error || !entry) {
+      throw new NotFoundException(`Entry #${entryId} not found`);
+    }
+
+    if (entry.analysis_status !== 'failed') {
+      throw new ConflictException(
+        '분석 실패 상태인 경우에만 재시도할 수 있습니다.',
+      );
+    }
+
+    await this.supabase.admin
+      .from('entries')
+      .update({ analysis_status: 'pending', analysis_error: null })
+      .eq('id', entryId);
+
+    this.createSubject(entryId);
+    void this.triggerAnalysis(entryId, userId, entry.content);
   }
 
   // ─── 내부 메서드 ─────────────────────────────────────────────────────────────

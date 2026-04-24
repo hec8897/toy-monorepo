@@ -71,6 +71,15 @@ export class JournalController {
     return this.journalService.create(req.user.id, dto);
   }
 
+  @Post(':id/retry-analysis')
+  @HttpCode(HttpStatus.ACCEPTED)
+  retryAnalysis(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ): Promise<void> {
+    return this.journalService.retryAnalysis(req.user.id, id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(
