@@ -207,6 +207,20 @@ export class JournalService {
     }
   }
 
+  private async withRetry<T>(
+    fn: () => Promise<T>,
+    label: string,
+    delayMs = 2000,
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (err) {
+      this.logger.warn(`[${label}] 실패, ${delayMs}ms 후 재시도...`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return fn();
+    }
+  }
+
   private emitSSE(entryId: string, type: SSEEventType, data: object): void {
     const subject = this.analysisSubjects.get(entryId);
     subject?.next(this.buildEvent(type, data));
@@ -233,8 +247,10 @@ export class JournalService {
         message: '개념 추출 중...',
       });
 
-      const { concepts, entry_summary } =
-        await this.agentService.extractConcepts(content);
+      const { concepts, entry_summary } = await this.withRetry(
+        () => this.agentService.extractConcepts(content),
+        `Step1:${entryId}`,
+      );
 
       await this.conceptsService.upsertBatch(entryId, userId, concepts);
 
@@ -254,9 +270,9 @@ export class JournalService {
         const candidates =
           await this.conceptsService.findCandidateConnections(conceptNames);
 
-        const { connections } = await this.agentService.searchConnections(
-          conceptNames,
-          candidates,
+        const { connections } = await this.withRetry(
+          () => this.agentService.searchConnections(conceptNames, candidates),
+          `Step2:${entryId}`,
         );
 
         await this.connectionsService.upsertBatch(connections);
