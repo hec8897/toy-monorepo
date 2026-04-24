@@ -252,9 +252,9 @@ export class AgentService implements OnModuleInit {
         };
       } catch (err: unknown) {
         const status = (err as { status?: number }).status;
-        if (status === 429) {
+        if (status === 429 || status === 503) {
           this.logger.warn(
-            `${modelName} quota exceeded (429), trying next model...`,
+            `${modelName} unavailable (${status}), trying next model...`,
           );
           continue;
         }
@@ -263,7 +263,7 @@ export class AgentService implements OnModuleInit {
     }
 
     throw new ServiceUnavailableException(
-      'All models quota exceeded. Please try again later.',
+      'All models unavailable. Please try again later.',
     );
   }
 
@@ -331,9 +331,9 @@ export class AgentService implements OnModuleInit {
         };
       } catch (err: unknown) {
         const status = (err as { status?: number }).status;
-        if (status === 429) {
+        if (status === 429 || status === 503) {
           this.logger.warn(
-            `${modelName} quota exceeded (429), trying next model...`,
+            `${modelName} unavailable (${status}), trying next model...`,
           );
           continue;
         }
@@ -342,7 +342,7 @@ export class AgentService implements OnModuleInit {
     }
 
     throw new ServiceUnavailableException(
-      'All models quota exceeded. Please try again later.',
+      'All models unavailable. Please try again later.',
     );
   }
 }
