@@ -50,6 +50,9 @@ export function useJournalAnalysis(
     if (!entryId || !initialStatus) return;
     if (initialStatus === 'completed' || initialStatus === 'failed') return;
 
+    // 재시도 시 이전 에러/상태 초기화 (failed → pending 전환 시)
+    setState(INITIAL_STATE);
+
     let es: EventSource | null = null;
 
     const connect = async () => {

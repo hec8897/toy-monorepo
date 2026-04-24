@@ -6,7 +6,9 @@ import {
   useGetEntry,
   useGetEntryConcepts,
   useJournalAnalysis,
+  useRetryAnalysis,
 } from '@/domains/journal/application';
+import type { AnalysisState } from '@/domains/journal/application';
 
 import { AnalysisProgressPanel } from './components/AnalysisProgressPanel';
 import { EntryContent } from './components/EntryContent';
@@ -23,10 +25,21 @@ export function EntryDetailPageView({ entryId }: EntryDetailPageViewProps) {
     entry?.analysis_status,
   );
   const analysisState = useJournalAnalysis(entryId, entry?.analysis_status);
+  const { mutate: retryAnalysis, isPending: isRetrying } =
+    useRetryAnalysis(entryId);
 
   const isAnalyzing =
     entry?.analysis_status === 'pending' ||
     entry?.analysis_status === 'processing';
+  const isFailed = entry?.analysis_status === 'failed';
+
+  // 페이지 진입 시 SSE 없이 DB 에러를 fallback으로 표시
+  const effectiveAnalysisState: AnalysisState = {
+    ...analysisState,
+    error:
+      analysisState.error ??
+      (isFailed ? (entry?.analysis_error ?? '분석에 실패했습니다.') : null),
+  };
 
   if (isLoading) {
     return (
@@ -59,11 +72,15 @@ export function EntryDetailPageView({ entryId }: EntryDetailPageViewProps) {
 
       <EntryContent entry={entry} />
 
-      {/* 분석 진행 중: SSE 실시간 패널 */}
-      {isAnalyzing && <AnalysisProgressPanel analysisState={analysisState} />}
+      {(isAnalyzing || isFailed) && (
+        <AnalysisProgressPanel
+          analysisState={effectiveAnalysisState}
+          onRetry={isFailed ? retryAnalysis : undefined}
+          isRetrying={isRetrying}
+        />
+      )}
 
-      {/* 분석 완료: 개념 목록 */}
-      {!isAnalyzing && (
+      {!isAnalyzing && !isFailed && (
         <LearnedConceptsSection
           status={entry.analysis_status}
           concepts={concepts}

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -179,6 +180,35 @@ export class JournalService {
     }
   }
 
+  async retryAnalysis(userId: string, entryId: string): Promise<void> {
+    const { data: entry, error } = await this.supabase.admin
+      .from('entries')
+      .select('id, analysis_status, content')
+      .eq('id', entryId)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .single();
+
+    if (error || !entry) {
+      throw new NotFoundException(`Entry #${entryId} not found`);
+    }
+
+    if (entry.analysis_status !== 'failed') {
+      throw new ConflictException(
+        '분석 실패 상태인 경우에만 재시도할 수 있습니다.',
+      );
+    }
+
+    await this.supabase.admin
+      .from('entries')
+      .update({ analysis_status: 'pending', analysis_error: null })
+      .eq('id', entryId)
+      .eq('user_id', userId);
+
+    this.createSubject(entryId);
+    void this.triggerAnalysis(entryId, userId, entry.content);
+  }
+
   // ─── 내부 메서드 ─────────────────────────────────────────────────────────────
 
   private createSubject(entryId: string): Subject<MessageEvent> {
@@ -204,6 +234,23 @@ export class JournalService {
     if (timer) {
       clearTimeout(timer);
       this.subjectTimers.delete(entryId);
+    }
+  }
+
+  private async withRetry<T>(
+    fn: () => Promise<T>,
+    label: string,
+    delayMs = 2000,
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      this.logger.warn(
+        `[${label}] 실패 (${reason}), ${delayMs}ms 후 재시도...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return fn();
     }
   }
 
@@ -233,8 +280,10 @@ export class JournalService {
         message: '개념 추출 중...',
       });
 
-      const { concepts, entry_summary } =
-        await this.agentService.extractConcepts(content);
+      const { concepts, entry_summary } = await this.withRetry(
+        () => this.agentService.extractConcepts(content),
+        `Step1:${entryId}`,
+      );
 
       await this.conceptsService.upsertBatch(entryId, userId, concepts);
 
@@ -254,9 +303,9 @@ export class JournalService {
         const candidates =
           await this.conceptsService.findCandidateConnections(conceptNames);
 
-        const { connections } = await this.agentService.searchConnections(
-          conceptNames,
-          candidates,
+        const { connections } = await this.withRetry(
+          () => this.agentService.searchConnections(conceptNames, candidates),
+          `Step2:${entryId}`,
         );
 
         await this.connectionsService.upsertBatch(connections);

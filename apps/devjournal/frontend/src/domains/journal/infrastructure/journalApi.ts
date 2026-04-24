@@ -14,6 +14,9 @@ export const journalApi = {
 
   deleteEntry: (id: string) => api.delete(`/entries/${id}`),
 
+  retryAnalysis: (id: string) =>
+    api.post<void>(`/entries/${id}/retry-analysis`),
+
   getEntryConcepts: (id: string) =>
     api
       .get<EntryConceptResponse[]>(`/entries/${id}/concepts`)
