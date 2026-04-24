@@ -46,22 +46,38 @@ function StepItem({ step, label, currentStep, isComplete }: StepItemProps) {
 
 interface AnalysisProgressPanelProps {
   analysisState: AnalysisState;
+  onRetry?: () => void;
+  isRetrying?: boolean;
 }
 
 export function AnalysisProgressPanel({
   analysisState,
+  onRetry,
+  isRetrying,
 }: AnalysisProgressPanelProps) {
   const { currentStep, concepts, connections, isComplete, error } =
     analysisState;
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-5 space-y-2">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-5 space-y-3">
         <div className="flex items-center gap-2">
           <span className="text-base">⚠️</span>
           <h2 className="text-sm font-semibold text-red-700">분석 실패</h2>
         </div>
         <p className="text-sm text-red-500">{error}</p>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            disabled={isRetrying}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-200 disabled:opacity-50 transition-colors"
+          >
+            {isRetrying && (
+              <span className="h-3 w-3 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+            )}
+            재시도
+          </button>
+        )}
       </div>
     );
   }
