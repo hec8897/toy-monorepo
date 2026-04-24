@@ -202,7 +202,8 @@ export class JournalService {
     await this.supabase.admin
       .from('entries')
       .update({ analysis_status: 'pending', analysis_error: null })
-      .eq('id', entryId);
+      .eq('id', entryId)
+      .eq('user_id', userId);
 
     this.createSubject(entryId);
     void this.triggerAnalysis(entryId, userId, entry.content);
