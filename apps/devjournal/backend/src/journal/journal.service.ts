@@ -215,7 +215,10 @@ export class JournalService {
     try {
       return await fn();
     } catch (err) {
-      this.logger.warn(`[${label}] 실패, ${delayMs}ms 후 재시도...`);
+      const reason = err instanceof Error ? err.message : String(err);
+      this.logger.warn(
+        `[${label}] 실패 (${reason}), ${delayMs}ms 후 재시도...`,
+      );
       await new Promise((resolve) => setTimeout(resolve, delayMs));
       return fn();
     }
