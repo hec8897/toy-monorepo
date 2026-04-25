@@ -6,6 +6,7 @@ import { ConceptsModule } from '@/concepts/concepts.module';
 import { ConnectionsModule } from '@/connections/connections.module';
 import { EmbeddingModule } from '@/embedding/embedding.module';
 import { JournalModule } from '@/journal/journal.module';
+import { MindmapModule } from '@/mindmap/mindmap.module';
 import { SupabaseModule } from '@/supabase/supabase.module';
 import { TestModule } from '@/test/test.module';
 
@@ -22,6 +23,7 @@ import { AppController } from './app.controller';
     JournalModule,
     ConceptsModule,
     ConnectionsModule,
+    MindmapModule,
     TestModule,
   ],
   controllers: [AppController],

@@ -114,12 +114,12 @@ export class ConceptDetailDto {
 
 ### 유닛 테스트
 
-`mindmap.service.spec.ts`:
+`devjournal-backend`에는 현재 jest test target이 셋업되어 있지 않다. Day 12 스코프 보호를 위해 jest 인프라 도입은 별도 작업으로 분리하고, 본 작업에서는 다음으로 검증한다:
 
-- `getUserMindmap` — 빈 결과(nodes/edges null) 정규화, 정상 결과 매핑
-- `getConceptDetail` — 본인 학습 X → NotFoundException, 정상 케이스 → DTO 매핑
-
-Supabase 클라이언트는 모킹 (`SupabaseService` 또는 `@nestjs/testing` 활용).
+- `npm run build:devjournal-backend` 빌드 통과 (TypeScript 타입 검증)
+- `npm run lint` 통과
+- 수동 검증 체크리스트 (아래 섹션)
+- 추후 jest 셋업 시 `mindmap.service.spec.ts` 추가 예정
 
 ---
 
@@ -354,7 +354,7 @@ useConceptDetailQuery(id, enabled) → GET /api/mindmap/concepts/:id
 
 ### 자동 테스트
 
-- BE: `mindmap.service.spec.ts` — Supabase 모킹, 2개 메서드 × (정상/예외) = 4 케이스
+- BE: 단위 테스트 인프라(jest) 미구축 → Day 12에서는 빌드 통과(타입 검증) + 수동 검증으로 대체
 - FE: 본 작업에서는 단위 테스트 생략 (D3 비결정성 + 라우팅 모킹 비용 高). Day 13 검색/필터 로직부터 추가.
 
 ### 수동 검증 체크리스트
@@ -383,8 +383,7 @@ useConceptDetailQuery(id, enabled) → GET /api/mindmap/concepts/:id
 - [ ] `mindmap/mindmap.controller.ts` — 2개 엔드포인트 + `SupabaseAuthGuard`
 - [ ] `mindmap/mindmap.module.ts`
 - [ ] `app.module.ts`에 `MindmapModule` 등록
-- [ ] `mindmap.service.spec.ts` — 4개 테스트 케이스
-- [ ] `npm run test:devjournal-backend` 통과 확인
+- [ ] `npm run build:devjournal-backend` 통과 확인 (jest 인프라 미구축, 타입 검증으로 대체)
 
 ### Frontend (NX project: `devjournal-frontend`)
 
