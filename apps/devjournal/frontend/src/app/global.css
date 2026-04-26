@@ -192,18 +192,3 @@
     color: rgb(255 211 140);
   }
 }
-
-/* 마인드맵 새 노드 pulse — 5초간 stroke가 부드럽게 깜빡 */
-@keyframes mindmap-node-pulse-keyframes {
-  0%,
-  100% {
-    stroke-opacity: 1;
-  }
-  50% {
-    stroke-opacity: 0.3;
-  }
-}
-
-.mindmap-node-pulse {
-  animation: mindmap-node-pulse-keyframes 1.2s ease-in-out infinite;
-}

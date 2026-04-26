@@ -54,7 +54,6 @@ export function MindmapNodeView({
         onClick={onClick}
         onMouseEnter={() => onHover(node.id)}
         onMouseLeave={() => onHover(null)}
-        className={isRecent ? 'mindmap-node-pulse' : undefined}
       />
       <text
         x={node.x + node.radius + 4}
