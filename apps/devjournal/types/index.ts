@@ -173,6 +173,44 @@ export interface RecommendNextOutput {
   streak_encouragement: string;
 }
 
+// ─── Mindmap API 응답 타입 (GET /api/mindmap) ─────────────────────────────────
+
+export interface MyMindmapNode {
+  id: string;
+  name: string;
+  category: string;
+  mastery: MasteryLevel;
+  review_count: number;
+}
+
+export interface MyMindmapEdge {
+  from: string;
+  to: string;
+  strength: number;
+  type: string;
+}
+
+export interface MyMindmapGraph {
+  nodes: MyMindmapNode[];
+  edges: MyMindmapEdge[];
+}
+
+export interface EntryRef {
+  id: string;
+  title: string | null;
+  created_at: string;
+}
+
+export interface ConceptDetail {
+  id: string;
+  name: string;
+  category: string;
+  description: string | null;
+  mastery: MasteryLevel;
+  review_count: number;
+  related_entries: EntryRef[];
+}
+
 // ─── SSE 이벤트 타입 ───────────────────────────────────────────────────────────
 
 export type SSEEventType =
