@@ -7,6 +7,7 @@ import { select, zoom as d3Zoom, ZoomTransform } from 'd3';
 import type { MyMindmapEdge, MyMindmapNode } from '@devjournal/types';
 
 import { useMindmapStore } from '@/domains/mindmap/application/mindmapStore';
+import { useMindmapFilterMatch } from '@/domains/mindmap/application/useMindmapFilterMatch';
 import {
   type SimLink,
   useMindmapSimulation,
@@ -57,6 +58,8 @@ export function MindmapCanvas({
   const setHovered = useMindmapStore((s) => s.setHovered);
   const hoveredEdgeKey = useMindmapStore((s) => s.hoveredEdgeKey);
   const setHoveredEdge = useMindmapStore((s) => s.setHoveredEdge);
+
+  const { matchedIds } = useMindmapFilterMatch(nodes);
 
   // 컨테이너 크기 측정
   useLayoutEffect(() => {
@@ -177,9 +180,13 @@ export function MindmapCanvas({
               typeof link.source === 'string' ? link.source : link.source.id;
             const targetId =
               typeof link.target === 'string' ? link.target : link.target.id;
-            const isFaded =
+            const outOfHover =
               !!neighbors &&
               !(neighbors.has(sourceId) && neighbors.has(targetId));
+            const outOfFilter =
+              !!matchedIds &&
+              !(matchedIds.has(sourceId) && matchedIds.has(targetId));
+            const isFaded = outOfHover || outOfFilter;
             const isEmphasized = hoveredEdgeKey === key;
             return (
               <MindmapEdgeView
@@ -193,7 +200,9 @@ export function MindmapCanvas({
             );
           })}
           {positionedNodes.map((node) => {
-            const isFaded = !!neighbors && !neighbors.has(node.id);
+            const outOfHover = !!neighbors && !neighbors.has(node.id);
+            const outOfFilter = !!matchedIds && !matchedIds.has(node.id);
+            const isFaded = outOfHover || outOfFilter;
             const isEmphasized = hoveredNodeId === node.id;
             return (
               <MindmapNodeView

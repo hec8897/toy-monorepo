@@ -4,3 +4,5 @@ export { useConceptDetailQuery } from './useConceptDetailQuery';
 export { useMindmapStore } from './mindmapStore';
 export { useMindmapSimulation } from './useMindmapSimulation';
 export type { SimNode, SimLink } from './useMindmapSimulation';
+export { useMindmapFilterMatch } from './useMindmapFilterMatch';
+export type { MindmapFilterMatchResult } from './useMindmapFilterMatch';
