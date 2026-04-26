@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import type { SimNode } from '@/domains/mindmap/application/useMindmapSimulation';
 import {
@@ -11,18 +11,23 @@ import {
 interface Props {
   node: SimNode;
   isSelected: boolean;
+  isFaded: boolean;
+  isEmphasized: boolean;
   onClick: () => void;
+  onHover: (id: string | null) => void;
   attachDrag: (element: SVGCircleElement | null, node: SimNode) => void;
 }
 
 export function MindmapNodeView({
   node,
   isSelected,
+  isFaded,
+  isEmphasized,
   onClick,
+  onHover,
   attachDrag,
 }: Props) {
   const circleRef = useRef<SVGCircleElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     attachDrag(circleRef.current, node);
@@ -30,11 +35,13 @@ export function MindmapNodeView({
 
   if (node.x === undefined || node.y === undefined) return null;
 
-  const stroke = isSelected ? '#0f172a' : '#fff';
-  const strokeWidth = isHovered || isSelected ? 4 : 2;
+  const isRecent = node.is_recent;
+  const stroke = isSelected ? '#0f172a' : isRecent ? '#f59e0b' : '#fff';
+  const strokeWidth = isEmphasized || isSelected || isRecent ? 4 : 2;
+  const opacity = isFaded ? 0.15 : 1;
 
   return (
-    <g style={{ cursor: 'pointer' }}>
+    <g style={{ cursor: 'pointer', opacity, transition: 'opacity 200ms ease' }}>
       <circle
         ref={circleRef}
         cx={node.x}
@@ -45,8 +52,9 @@ export function MindmapNodeView({
         stroke={stroke}
         strokeWidth={strokeWidth}
         onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => onHover(node.id)}
+        onMouseLeave={() => onHover(null)}
+        className={isRecent ? 'mindmap-node-pulse' : undefined}
       />
       <text
         x={node.x + node.radius + 4}

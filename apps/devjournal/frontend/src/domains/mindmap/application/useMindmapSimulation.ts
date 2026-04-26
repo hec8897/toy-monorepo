@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   drag as d3Drag,
@@ -41,13 +41,24 @@ interface UseMindmapSimulationResult {
   positionedNodes: SimNode[];
   positionedLinks: SimLink[];
   attachDrag: (element: SVGCircleElement | null, node: SimNode) => void;
+  /** 캔버스 줌-fit 등에서 노드 좌표를 직접 읽어야 할 때 */
+  getNodes: () => SimNode[];
+  /** 시뮬레이션 reheat (zoom-fit 후 안정화 등) */
+  reheat: (alpha?: number) => void;
 }
 
 const CHARGE_STRENGTH = -150;
-const COLLIDE_PADDING = 4;
-const LINK_DISTANCE_BASE = 50;
-const LINK_DISTANCE_RANGE = 100;
+const COLLIDE_PADDING = 8;
+const LINK_DISTANCE_BASE = 100;
+const LINK_DISTANCE_RANGE = 140;
+const REHEAT_ALPHA = 0.3;
 
+/**
+ * D3 force-directed 시뮬레이션 훅.
+ * - simulation 인스턴스를 한 번만 만들고, nodes/edges prop이 바뀌면 nodes()/links() 업데이트만.
+ * - 기존 SimNode 좌표/fx/fy 보존 → 사용자 드래그 위치, 안정화된 위치가 머지 후에도 유지.
+ * - 새 노드는 이웃 노드 좌표 평균에서 등장하여 자연스럽게 자리 잡음.
+ */
 export function useMindmapSimulation({
   nodes,
   edges,
@@ -55,58 +66,122 @@ export function useMindmapSimulation({
   height,
 }: UseMindmapSimulationParams): UseMindmapSimulationResult {
   const simulationRef = useRef<Simulation<SimNode, SimLink> | null>(null);
-  const [tick, setTick] = useState(0);
+  const nodesMapRef = useRef<Map<string, SimNode>>(new Map());
+  const linksRef = useRef<SimLink[]>([]);
+  const [, setTick] = useState(0);
 
-  // 입력 nodes/edges → SimNode/SimLink 변환 (참조 유지)
-  const { simNodes, simLinks } = useMemo(() => {
-    const simNodes: SimNode[] = nodes.map((n) => ({
-      ...n,
-      radius: getNodeRadius(n.review_count),
-    }));
-    const idToSimNode = new Map(simNodes.map((n) => [n.id, n]));
+  // nodes/edges/size 변경 시 simulation 동기화
+  useEffect(() => {
+    if (width <= 0 || height <= 0) return;
 
+    const map = nodesMapRef.current;
+    const incomingIds = new Set(nodes.map((n) => n.id));
+
+    // 사라진 노드 제거
+    for (const id of Array.from(map.keys())) {
+      if (!incomingIds.has(id)) map.delete(id);
+    }
+
+    // 새/업데이트 노드 반영
+    for (const n of nodes) {
+      const existing = map.get(n.id);
+      if (existing) {
+        // 메타만 업데이트, 좌표/fx/fy/vx/vy 유지
+        existing.name = n.name;
+        existing.category = n.category;
+        existing.mastery = n.mastery;
+        existing.review_count = n.review_count;
+        existing.is_recent = n.is_recent;
+        existing.radius = getNodeRadius(n.review_count);
+      } else {
+        // 신규 노드: 이웃 노드 좌표 평균에서 출발
+        const neighborIds: string[] = [];
+        for (const e of edges) {
+          if (e.from === n.id) neighborIds.push(e.to);
+          else if (e.to === n.id) neighborIds.push(e.from);
+        }
+        const neighborNodes = neighborIds
+          .map((id) => map.get(id))
+          .filter(
+            (sn): sn is SimNode =>
+              !!sn && typeof sn.x === 'number' && typeof sn.y === 'number',
+          );
+
+        const initialX =
+          neighborNodes.length > 0
+            ? neighborNodes.reduce((sum, sn) => sum + (sn.x ?? 0), 0) /
+              neighborNodes.length
+            : width / 2 + (Math.random() - 0.5) * 60;
+        const initialY =
+          neighborNodes.length > 0
+            ? neighborNodes.reduce((sum, sn) => sum + (sn.y ?? 0), 0) /
+              neighborNodes.length
+            : height / 2 + (Math.random() - 0.5) * 60;
+
+        map.set(n.id, {
+          ...n,
+          radius: getNodeRadius(n.review_count),
+          x: initialX,
+          y: initialY,
+        });
+      }
+    }
+
+    const simNodes = Array.from(map.values());
+
+    // simLinks 재생성 (양 끝점이 map에 있는 경우만)
     const simLinks: SimLink[] = edges
-      .filter((e) => idToSimNode.has(e.from) && idToSimNode.has(e.to))
+      .filter((e) => map.has(e.from) && map.has(e.to))
       .map((e) => ({
-        source: idToSimNode.get(e.from) as SimNode,
-        target: idToSimNode.get(e.to) as SimNode,
+        source: map.get(e.from) as SimNode,
+        target: map.get(e.to) as SimNode,
         strength: e.strength,
         type: e.type,
       }));
+    linksRef.current = simLinks;
 
-    return { simNodes, simLinks };
-  }, [nodes, edges]);
-
-  useEffect(() => {
-    if (simNodes.length === 0 || width <= 0 || height <= 0) {
-      return;
+    if (!simulationRef.current) {
+      // 첫 마운트
+      const simulation = forceSimulation<SimNode, SimLink>(simNodes)
+        .force(
+          'link',
+          forceLink<SimNode, SimLink>(simLinks)
+            .id((d) => d.id)
+            .distance(
+              (link) =>
+                LINK_DISTANCE_BASE + (1 - link.strength) * LINK_DISTANCE_RANGE,
+            ),
+        )
+        .force('charge', forceManyBody<SimNode>().strength(CHARGE_STRENGTH))
+        .force('center', forceCenter<SimNode>(width / 2, height / 2))
+        .force(
+          'collide',
+          forceCollide<SimNode>().radius((d) => d.radius + COLLIDE_PADDING),
+        )
+        .on('tick', () => setTick((t) => t + 1));
+      simulationRef.current = simulation;
+    } else {
+      // 업데이트
+      const simulation = simulationRef.current;
+      simulation.nodes(simNodes);
+      const linkForce = simulation.force('link') as ReturnType<
+        typeof forceLink<SimNode, SimLink>
+      > | null;
+      linkForce?.links(simLinks);
+      simulation.force('center', forceCenter<SimNode>(width / 2, height / 2));
+      simulation.alpha(REHEAT_ALPHA).restart();
     }
+  }, [nodes, edges, width, height]);
 
-    const simulation = forceSimulation<SimNode, SimLink>(simNodes)
-      .force(
-        'link',
-        forceLink<SimNode, SimLink>(simLinks)
-          .id((d) => d.id)
-          .distance(
-            (link) =>
-              LINK_DISTANCE_BASE + (1 - link.strength) * LINK_DISTANCE_RANGE,
-          ),
-      )
-      .force('charge', forceManyBody<SimNode>().strength(CHARGE_STRENGTH))
-      .force('center', forceCenter<SimNode>(width / 2, height / 2))
-      .force(
-        'collide',
-        forceCollide<SimNode>().radius((d) => d.radius + COLLIDE_PADDING),
-      )
-      .on('tick', () => setTick((t) => t + 1));
-
-    simulationRef.current = simulation;
-
+  // 언마운트 시 정리
+  useEffect(() => {
     return () => {
-      simulation.stop();
+      simulationRef.current?.stop();
       simulationRef.current = null;
+      nodesMapRef.current.clear();
+      linksRef.current = [];
     };
-  }, [simNodes, simLinks, width, height]);
+  }, []);
 
   const attachDrag = (
     element: SVGCircleElement | null,
@@ -134,12 +209,12 @@ export function useMindmapSimulation({
     select(element).call(dragBehavior);
   };
 
-  // tick 의존성으로 리렌더 트리거 — simNodes/simLinks 자체 좌표가 바뀜
-  void tick;
-
   return {
-    positionedNodes: simNodes,
-    positionedLinks: simLinks,
+    positionedNodes: Array.from(nodesMapRef.current.values()),
+    positionedLinks: linksRef.current,
     attachDrag,
+    getNodes: () => Array.from(nodesMapRef.current.values()),
+    reheat: (alpha = REHEAT_ALPHA) =>
+      simulationRef.current?.alpha(alpha).restart(),
   };
 }

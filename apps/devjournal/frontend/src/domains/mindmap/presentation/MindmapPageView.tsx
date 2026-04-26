@@ -8,7 +8,7 @@ import { MindmapCanvas } from './MindmapCanvas';
 import { MindmapEmptyState } from './MindmapEmptyState';
 
 export function MindmapPageView() {
-  const { data, isLoading, error, refetch } = useMindmapQuery();
+  const { data, isLoading, error, refetch, isFetching } = useMindmapQuery();
   const selectedConceptId = useMindmapStore((s) => s.selectedConceptId);
   const selectConcept = useMindmapStore((s) => s.selectConcept);
 
@@ -48,6 +48,8 @@ export function MindmapPageView() {
           edges={data.edges}
           selectedConceptId={selectedConceptId}
           onSelectConcept={selectConcept}
+          onRefresh={() => refetch()}
+          isRefreshing={isFetching}
         />
       )}
 

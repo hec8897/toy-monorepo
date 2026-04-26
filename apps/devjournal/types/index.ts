@@ -181,6 +181,8 @@ export interface MyMindmapNode {
   category: string;
   mastery: MasteryLevel;
   review_count: number;
+  /** 사용자의 가장 최근 일기로 처음 등장한 개념 — UI 강조용 */
+  is_recent: boolean;
 }
 
 export interface MyMindmapEdge {
@@ -217,7 +219,6 @@ export type SSEEventType =
   | 'progress'
   | 'concepts_extracted'
   | 'connections_found'
-  | 'mindmap_updated'
   | 'recommendations_ready'
   | 'analysis_complete'
   | 'step_failed'
@@ -235,11 +236,6 @@ export interface SSEConceptsExtractedData {
 
 export interface SSEConnectionsFoundData {
   connections: ConceptConnection[];
-}
-
-export interface SSEMindmapUpdatedData {
-  delta: { nodes: MindmapNode[]; links: MindmapLink[] };
-  total_node_count: number;
 }
 
 export interface SSERecommendationsReadyData {
