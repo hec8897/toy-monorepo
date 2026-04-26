@@ -263,10 +263,12 @@ export class ConceptsService {
     }
 
     // 5. user_concepts UPSERT (이미 학습 중인 개념은 skip)
+    // first_seen_entry_id: 신규 row에만 세팅되고 기존 row는 ignoreDuplicates로 보존됨
     const userConceptRows = allConceptIds.map((conceptId) => ({
       user_id: userId,
       concept_id: conceptId,
       mastery_level: 'learning',
+      first_seen_entry_id: entryId,
     }));
 
     const { error: userConceptError } = await this.supabase.admin

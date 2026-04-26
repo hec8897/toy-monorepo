@@ -13,9 +13,12 @@ import type {
   SSEProgressData,
 } from '@devjournal/types';
 
+import { mindmapQueryKeys } from '@/domains/mindmap/application/queryKeys';
 import { createClient } from '@/shared/lib/supabase';
 
 import { journalQueryKeys } from './queryKeys';
+
+// 분석 끝나면 마인드맵에 새 개념이 들어왔을 가능성 → 다음 진입 시 refetch 보장
 
 export interface AnalysisState {
   /** 0: 시작 전, 1: 개념 추출 중, 2: 연결 분석 중 */
@@ -89,6 +92,9 @@ export function useJournalAnalysis(
         });
         void queryClient.invalidateQueries({
           queryKey: journalQueryKeys.concepts(entryId),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: mindmapQueryKeys.graph(),
         });
       });
 

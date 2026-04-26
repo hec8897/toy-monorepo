@@ -21,6 +21,7 @@ interface RawMindmapNode {
   category: string;
   mastery: string | null;
   review_count: number | null;
+  is_recent: boolean | null;
 }
 
 interface RawMindmapEdge {
@@ -140,6 +141,7 @@ export class MindmapService {
       category: node.category,
       mastery: this.coerceMastery(node.mastery),
       review_count: node.review_count ?? 0,
+      is_recent: node.is_recent ?? false,
     }));
 
     const edges: MindmapEdgeDto[] = (raw?.edges ?? []).map((edge) => ({
