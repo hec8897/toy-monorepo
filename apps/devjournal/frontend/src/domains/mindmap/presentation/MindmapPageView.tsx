@@ -6,6 +6,7 @@ import { useMindmapQuery } from '@/domains/mindmap/application/useMindmapQuery';
 import { ConceptDetailDrawer } from './ConceptDetailDrawer';
 import { MindmapCanvas } from './MindmapCanvas';
 import { MindmapEmptyState } from './MindmapEmptyState';
+import { MindmapFilterPanel } from './MindmapFilterPanel';
 
 export function MindmapPageView() {
   const { data, isLoading, error, refetch, isFetching } = useMindmapQuery();
@@ -43,14 +44,17 @@ export function MindmapPageView() {
       {data && data.nodes.length === 0 && <MindmapEmptyState />}
 
       {data && data.nodes.length > 0 && (
-        <MindmapCanvas
-          nodes={data.nodes}
-          edges={data.edges}
-          selectedConceptId={selectedConceptId}
-          onSelectConcept={selectConcept}
-          onRefresh={() => refetch()}
-          isRefreshing={isFetching}
-        />
+        <>
+          <MindmapFilterPanel nodes={data.nodes} />
+          <MindmapCanvas
+            nodes={data.nodes}
+            edges={data.edges}
+            selectedConceptId={selectedConceptId}
+            onSelectConcept={selectConcept}
+            onRefresh={() => refetch()}
+            isRefreshing={isFetching}
+          />
+        </>
       )}
 
       <ConceptDetailDrawer

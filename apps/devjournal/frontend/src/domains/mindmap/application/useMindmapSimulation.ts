@@ -9,6 +9,8 @@ import {
   forceLink,
   forceManyBody,
   forceSimulation,
+  forceX,
+  forceY,
   select,
   Simulation,
   SimulationLinkDatum,
@@ -47,11 +49,62 @@ interface UseMindmapSimulationResult {
   reheat: (alpha?: number) => void;
 }
 
-const CHARGE_STRENGTH = -150;
-const COLLIDE_PADDING = 8;
-const LINK_DISTANCE_BASE = 100;
-const LINK_DISTANCE_RANGE = 140;
+// 데스크탑 (≥640px)
+const DESKTOP = {
+  charge: -150,
+  collidePadding: 8,
+  linkDistanceBase: 100,
+  linkDistanceRange: 140,
+  centerStrength: 0, // forceX/Y 비활성 — forceCenter만 사용
+};
+
+// 모바일 (<640px) — 좁은 화면에 노드들이 가운데 모이도록
+const MOBILE = {
+  charge: -80,
+  collidePadding: 4,
+  linkDistanceBase: 50,
+  linkDistanceRange: 70,
+  centerStrength: 0.08, // forceX/Y로 가운데 약한 끌어당김 (외곽 이탈 방지)
+};
+
+const MOBILE_BREAKPOINT_PX = 640;
 const REHEAT_ALPHA = 0.3;
+
+function getForceParams(width: number): typeof DESKTOP {
+  return width < MOBILE_BREAKPOINT_PX ? MOBILE : DESKTOP;
+}
+
+/**
+ * 시뮬레이션에 force들을 적용/갱신.
+ * 마운트와 update 케이스 모두에서 동일하게 호출되어 파라미터 동기화 누락을 방지.
+ */
+function applyForces(
+  simulation: Simulation<SimNode, SimLink>,
+  params: typeof DESKTOP,
+  width: number,
+  height: number,
+  links: SimLink[],
+): void {
+  simulation
+    .force(
+      'link',
+      forceLink<SimNode, SimLink>(links)
+        .id((d) => d.id)
+        .distance(
+          (link) =>
+            params.linkDistanceBase +
+            (1 - link.strength) * params.linkDistanceRange,
+        ),
+    )
+    .force('charge', forceManyBody<SimNode>().strength(params.charge))
+    .force('center', forceCenter<SimNode>(width / 2, height / 2))
+    .force(
+      'collide',
+      forceCollide<SimNode>().radius((d) => d.radius + params.collidePadding),
+    )
+    .force('x', forceX<SimNode>(width / 2).strength(params.centerStrength))
+    .force('y', forceY<SimNode>(height / 2).strength(params.centerStrength));
+}
 
 /**
  * D3 force-directed 시뮬레이션 훅.
@@ -140,35 +193,21 @@ export function useMindmapSimulation({
       }));
     linksRef.current = simLinks;
 
+    const params = getForceParams(width);
+
     if (!simulationRef.current) {
       // 첫 마운트
-      const simulation = forceSimulation<SimNode, SimLink>(simNodes)
-        .force(
-          'link',
-          forceLink<SimNode, SimLink>(simLinks)
-            .id((d) => d.id)
-            .distance(
-              (link) =>
-                LINK_DISTANCE_BASE + (1 - link.strength) * LINK_DISTANCE_RANGE,
-            ),
-        )
-        .force('charge', forceManyBody<SimNode>().strength(CHARGE_STRENGTH))
-        .force('center', forceCenter<SimNode>(width / 2, height / 2))
-        .force(
-          'collide',
-          forceCollide<SimNode>().radius((d) => d.radius + COLLIDE_PADDING),
-        )
-        .on('tick', () => setTick((t) => t + 1));
+      const simulation = forceSimulation<SimNode, SimLink>(simNodes).on(
+        'tick',
+        () => setTick((t) => t + 1),
+      );
+      applyForces(simulation, params, width, height, simLinks);
       simulationRef.current = simulation;
     } else {
-      // 업데이트
+      // 업데이트 — width 변경 시 모바일/데스크탑 전환 대응
       const simulation = simulationRef.current;
       simulation.nodes(simNodes);
-      const linkForce = simulation.force('link') as ReturnType<
-        typeof forceLink<SimNode, SimLink>
-      > | null;
-      linkForce?.links(simLinks);
-      simulation.force('center', forceCenter<SimNode>(width / 2, height / 2));
+      applyForces(simulation, params, width, height, simLinks);
       simulation.alpha(REHEAT_ALPHA).restart();
     }
   }, [nodes, edges, width, height]);

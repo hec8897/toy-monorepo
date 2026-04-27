@@ -5,3 +5,4 @@ export { MindmapEdgeView } from './MindmapEdgeView';
 export { ConceptDetailDrawer } from './ConceptDetailDrawer';
 export { MindmapEmptyState } from './MindmapEmptyState';
 export { MindmapToolbar } from './MindmapToolbar';
+export { MindmapFilterPanel } from './MindmapFilterPanel';
