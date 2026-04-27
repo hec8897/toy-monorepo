@@ -2,4 +2,4 @@ export type {
   DashboardKpis,
   ConceptGrowthPoint,
   HeatmapCell,
-} from './dashboard.types';
+} from '@toy-monorepo/types';

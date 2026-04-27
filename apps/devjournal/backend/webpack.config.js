@@ -7,6 +7,14 @@ module.exports = {
     alias: {
       '@': join(__dirname, 'src'),
       '@devjournal/types': join(__dirname, '../types/index.ts'),
+      '@toy-monorepo/types': join(
+        __dirname,
+        '../../../packages/types/src/index.ts',
+      ),
+      '@toy-monorepo/common': join(
+        __dirname,
+        '../../../packages/common/src/index.ts',
+      ),
     },
   },
   output: {

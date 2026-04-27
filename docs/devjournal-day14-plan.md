@@ -173,8 +173,10 @@ as $$
   )
   select
     s.day as date,
-    (select base from baseline)
-      + sum(coalesce(d.new_count, 0))::int over (order by s.day) as cumulative
+    (
+      (select base from baseline)
+      + sum(coalesce(d.new_count, 0)) over (order by s.day)
+    )::int as cumulative
   from day_series s
   left join daily d on d.day = s.day
   order by s.day;
@@ -464,7 +466,7 @@ export interface HeatmapCell {
 | 7   | 프론트 domain/infrastructure/application                                                    | API 클라이언트 + React Query 훅 |
 | 8   | 프론트 presentation (KpiCard/Grid → ConceptGrowthChart → WeeklyHeatmap → DashboardPageView) |                                 |
 | 9   | `app/(app)/dashboard/page.tsx`를 `<DashboardPageView />`로 교체                             |                                 |
-| 10  | 수동 검증 (아래 체크리스트)                                                                 |                                 |
+| 10  | 수동 **검증** (아래 체크리스트)                                                             |                                 |
 | 11  | 작업 일지 작성 + 커밋 + PR                                                                  |                                 |
 
 ---
@@ -481,6 +483,8 @@ export interface HeatmapCell {
 ---
 
 ## 🧷 의존성
+
+---
 
 추가:
 

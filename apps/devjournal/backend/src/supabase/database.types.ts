@@ -285,6 +285,15 @@ export type Database = {
           similarity: number;
         }[];
       };
+      get_user_streak: { Args: { p_user_id: string }; Returns: number };
+      get_concept_growth: {
+        Args: { p_user_id: string; p_days?: number };
+        Returns: { date: string; cumulative: number }[];
+      };
+      get_entry_heatmap: {
+        Args: { p_user_id: string; p_days?: number };
+        Returns: { date: string; count: number }[];
+      };
     };
     Enums: {
       [_ in never]: never;
