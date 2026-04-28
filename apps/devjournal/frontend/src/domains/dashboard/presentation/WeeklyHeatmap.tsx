@@ -36,29 +36,24 @@ function buildCalendar(countsByDate: Map<string, number>): HeatmapDay[][] {
     cells.push({ date: iso, count: countsByDate.get(iso) ?? 0 });
   }
 
-  // 7행(요일) × 13열(주). 가장 오래된 날짜의 요일에서 시작해 13주를 채운다.
   const grid: HeatmapDay[][] = Array.from({ length: HEATMAP_ROWS }, () =>
     Array.from({ length: HEATMAP_COLS }, () => ({ date: '', count: 0 })),
   );
 
-  // cells의 첫 셀(가장 오래된 날짜)이 차지할 행(요일)
-  const firstDate = new Date(cells[0].date);
-  const startWeekday = firstDate.getDay(); // 0=일 ~ 6=토
-
-  let cellIdx = 0;
-  for (let col = 0; col < HEATMAP_COLS; col += 1) {
-    for (let row = 0; row < HEATMAP_ROWS; row += 1) {
-      // 첫 열은 startWeekday 행부터 채운다
-      if (col === 0 && row < startWeekday) {
-        grid[row][col] = { date: '', count: 0 };
+  // 오늘을 마지막 열의 오늘 요일 칸에 두고, 뒤에서부터 역방향으로 채운다.
+  // 마지막 열에서 오늘 이후(미래) 요일은 placeholder로 남긴다.
+  const todayWeekday = today.getDay(); // 0=일 ~ 6=토
+  let cellIdx = cells.length - 1;
+  for (let col = HEATMAP_COLS - 1; col >= 0; col -= 1) {
+    for (let row = HEATMAP_ROWS - 1; row >= 0; row -= 1) {
+      if (col === HEATMAP_COLS - 1 && row > todayWeekday) {
         continue;
       }
-      if (cellIdx >= cells.length) {
-        grid[row][col] = { date: '', count: 0 };
+      if (cellIdx < 0) {
         continue;
       }
       grid[row][col] = cells[cellIdx];
-      cellIdx += 1;
+      cellIdx -= 1;
     }
   }
 
