@@ -19,7 +19,8 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
-      "@devjournal/types": ["../types/index.ts"]
+      "@devjournal/types": ["../types/index.ts"],
+      "@toy-monorepo/types": ["../../../packages/types/src/index.ts"]
     }
   },
   "include": [
