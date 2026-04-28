@@ -59,6 +59,8 @@
     "@types/bcrypt": "^6.0.0",
     "@types/cheerio": "^1.0.0",
     "@types/cookie-parser": "^1.4.10",
+    "@types/d3": "^7.4.3",
+    "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "20.19.9",
@@ -106,6 +108,11 @@
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "@tanstack/react-query": "^5.90.20",
+    "@tiptap/extension-code-block-lowlight": "^3.22.4",
+    "@tiptap/extension-link": "^3.22.4",
+    "@tiptap/extension-underline": "^3.22.4",
+    "@tiptap/react": "^3.22.4",
+    "@tiptap/starter-kit": "^3.22.4",
     "antd": "^6.2.2",
     "axios": ">=1.13.5",
     "bcrypt": "^6.0.0",
@@ -113,7 +120,11 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "cookie-parser": "^1.4.7",
+    "d3": "^7.9.0",
     "dayjs": "^1.11.19",
+    "dompurify": "^3.4.1",
+    "lowlight": "^3.3.0",
+    "marked": "^18.0.2",
     "nestjs-zod": "^5.1.1",
     "next": "~16.2.3",
     "nuqs": "^2.8.8",
@@ -126,8 +137,10 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
     "react-icons": "^5.6.0",
+    "recharts": "^3.8.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
+    "tiptap-markdown": "^0.9.0",
     "typeorm": "^0.3.28",
     "zod": "^4.3.6",
     "zustand": "^5.0.10"
@@ -138,7 +151,8 @@
       "axios@<1.15.0": "1.15.0",
       "minimatch@>=9.0.0 <9.0.6": "9.0.7",
       "picomatch@>=4.0.0 <4.0.4": "4.0.4",
-      "lodash@>=4.0.0 <=4.17.23": "4.18.1"
+      "lodash@>=4.0.0 <=4.17.23": "4.18.1",
+      "basic-ftp@<5.3.0": "5.3.0"
     }
   },
   "lint-staged": {

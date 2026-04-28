@@ -3,7 +3,7 @@
 > Claude Code에 이 파일을 전달해 프로젝트 컨텍스트를 공유하세요.
 > "이 파일을 읽고 devjournal 프로젝트 셋업을 도와줘"
 >
-> **최종 업데이트:** 2026-04-05 (DB / Backend / Frontend / AI Agent 4개 에이전트 분석 반영)
+> **최종 업데이트:** 2026-04-17 (Day 8-D 완료 — JournalService fire-and-forget 분석 트리거 연결)
 
 ---
 
@@ -17,17 +17,17 @@
 
 ## 확정된 기술 스택
 
-| 레이어   | 기술                                       | 이유                                                 |
-| -------- | ------------------------------------------ | ---------------------------------------------------- |
-| Frontend | Next.js 14 App Router                      | SSG 블로그 + CSR 앱 혼용, SEO                        |
-| Backend  | NestJS                                     | DI 구조로 Agent Tool 모듈 분리                       |
-| Database | Supabase (PostgreSQL)                      | pgvector 임베딩 검색, Auth 내장                      |
-| AI       | **Google Gemini Flash** (function calling) | 무료 tier (15 RPM, 1M tokens/일), tool_use 동일 지원 |
-| 임베딩   | **Ollama `nomic-embed-text`** (768차원)    | 로컬 무료, 인터넷 불필요                             |
-| 마인드맵 | D3.js force-directed graph                 | 커스텀 지식 그래프 시각화                            |
-| 에디터   | **Tiptap v2**                              | 코드블록 하이라이팅, 헤드리스 구조                   |
-| 스트리밍 | SSE (Server-Sent Events)                   | 단방향 분석 결과 실시간 전달                         |
-| 앱 확장  | PWA → Capacitor                            | 웹뷰 앱, 추가 코드 최소화                            |
+| 레이어   | 기술                                        | 이유                                                 |
+| -------- | ------------------------------------------- | ---------------------------------------------------- |
+| Frontend | Next.js 14 App Router                       | SSG 블로그 + CSR 앱 혼용, SEO                        |
+| Backend  | NestJS                                      | DI 구조로 Agent Tool 모듈 분리                       |
+| Database | Supabase (PostgreSQL)                       | pgvector 임베딩 검색, Auth 내장                      |
+| AI       | **Google Gemini Flash** (function calling)  | 무료 tier (15 RPM, 1M tokens/일), tool_use 동일 지원 |
+| 임베딩   | **Gemini `gemini-embedding-001`** (768차원) | M5 Metal 비호환으로 Ollama 대체, Gemini API 통일     |
+| 마인드맵 | D3.js force-directed graph                  | 커스텀 지식 그래프 시각화                            |
+| 에디터   | **Tiptap v2**                               | 코드블록 하이라이팅, 헤드리스 구조                   |
+| 스트리밍 | SSE (Server-Sent Events)                    | 단방향 분석 결과 실시간 전달                         |
+| 앱 확장  | PWA → Capacitor                             | 웹뷰 앱, 추가 코드 최소화                            |
 
 > WebSocket 미사용. 분석 흐름이 단방향(서버→클라이언트)이라 SSE로 충분.
 
@@ -123,7 +123,7 @@ apps/devjournal/backend/src/
 │   └── mindmap.service.ts    ← pgvector 그래프 쿼리, 델타 머지
 ├── concepts/
 │   ├── concepts.module.ts
-│   └── concepts.service.ts   ← 개념 upsert, Ollama nomic-embed-text 임베딩 생성
+│   └── concepts.service.ts   ← 개념 upsert, Gemini gemini-embedding-001 임베딩 생성
 ├── blog/
 │   ├── blog.module.ts
 │   └── blog.service.ts       ← 퍼블리시 + SEO 메타 자동생성
@@ -160,7 +160,7 @@ POST /api/entries
 클라이언트 → GET /api/entries/:id/analysis (SSE 연결)
     │
     ├─ [Step 1] Claude API — extract_concepts (강제 호출)
-    │           └─ ConceptsService.upsertBatch() → Ollama nomic-embed-text 임베딩 생성
+    │           └─ ConceptsService.upsertBatch() → Gemini gemini-embedding-001 임베딩 생성
     │           └─ SSE: { event: 'concepts_extracted', data: [...] }
     │
     ├─ [Step 2] pgvector 코사인 유사도 직접 쿼리 (Claude 호출 없음)
@@ -303,7 +303,7 @@ create table entries (
   content          text not null check (char_length(content) >= 10),
   title            text,
   summary          text,                    -- Claude가 생성하는 1~2문장 요약
-  embedding        vector(768),             -- entry 전체 임베딩 (Ollama nomic-embed-text)
+  embedding        vector(768),             -- entry 전체 임베딩 (Gemini gemini-embedding-001)
 
   -- 분석 상태 (원안에 없었던 컬럼)
   analysis_status  text not null default 'pending'
@@ -344,7 +344,7 @@ create table concepts (
               )),
   description text,
   aliases     text[],
-  embedding   vector(768) not null,         -- Ollama nomic-embed-text voyage-3-lite (512차원)
+  embedding   vector(768) not null,         -- Gemini gemini-embedding-001 (768차원)
   source      text default 'ai_extracted'
               check (source in ('ai_extracted','user_defined','seed')),
   usage_count int not null default 0,
@@ -454,19 +454,19 @@ $$;
 
 ## 임베딩 전략
 
-| 항목        | 결정                          | 이유                             |
-| ----------- | ----------------------------- | -------------------------------- |
-| AI 모델     | **Google Gemini Flash**       | 무료 tier, function calling 지원 |
-| 임베딩 모델 | **Ollama `nomic-embed-text`** | 로컬 실행, 완전 무료             |
-| 차원        | **768**                       | nomic-embed-text 기본 차원       |
-| 인덱스      | **HNSW**                      | 수만 개 규모에서 recall 95~99%   |
-| 임베딩 대상 | `name + " " + description`    | 짧고 명확                        |
-| 캐싱        | DB의 `embedding` 컬럼 재사용  | 동일 개념 재임베딩 스킵          |
+| 항목        | 결정                              | 이유                             |
+| ----------- | --------------------------------- | -------------------------------- |
+| AI 모델     | **Google Gemini Flash**           | 무료 tier, function calling 지원 |
+| 임베딩 모델 | **Gemini `gemini-embedding-001`** | M5 Metal 비호환으로 Ollama 대체  |
+| 차원        | **768**                           | outputDimensionality=768 지정    |
+| 인덱스      | **HNSW**                          | 수만 개 규모에서 recall 95~99%   |
+| 임베딩 대상 | `name + " " + description`        | 짧고 명확                        |
+| 캐싱        | DB의 `embedding` 컬럼 재사용      | 동일 개념 재임베딩 스킵          |
 
 **비용:**
 
 - AI 분석: **$0** (Gemini Flash 무료 tier — 15 RPM, 1M tokens/일)
-- 임베딩: **$0** (Ollama 로컬)
+- 임베딩: **$0** (Gemini 무료 tier)
 - Supabase: **$0** (Free tier — 500MB DB, 1GB storage)
 - 총합: **$0** (프로토타입 기준)
 
@@ -546,8 +546,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...   # RLS 우회, 절대 노출 금지
 
 # AI
 GEMINI_API_KEY=AIza...              # Google AI Studio에서 무료 발급
-OLLAMA_BASE_URL=http://localhost:11434  # 로컬 Ollama
-EMBEDDING_MODEL=nomic-embed-text
 EMBEDDING_DIMENSION=768
 ```
 
@@ -557,7 +555,7 @@ EMBEDDING_DIMENSION=768
 
 ```bash
 # 백엔드
-pnpm add @google/generative-ai @supabase/supabase-js ollama
+pnpm add @google/generative-ai @supabase/supabase-js
 
 # 프론트엔드
 pnpm add @tiptap/react @tiptap/starter-kit @tiptap/extension-code-block-lowlight tiptap-markdown lowlight
@@ -646,21 +644,24 @@ cd toy-monorepo && claude "devjournal 백엔드 agent 모듈 만들어줘"
 > **방침 변경 (2026-04-09)**: AI Agent 전에 실제 배포 환경 구축 필요.
 > Day 7을 **CI/CD 구성** (GitHub Actions + AWS EC2 BE / Vercel FE)으로 교체. 기존 Day 7 이후 한 칸씩 밀림.
 
-| 일차      | 기능              | 내용                                                                         | 우선순위 |
-| --------- | ----------------- | ---------------------------------------------------------------------------- | -------- |
-| Day 1–2   | ✅ DB 셋업        | Supabase migrations 001~011, pgvector HNSW 인덱스                            | P0       |
-| Day 3     | ✅ 스캐폴딩       | NX BE+FE 스캐폴딩, SupabaseModule, Auth/Layout 기본 구현                     | P0       |
-| Day 4     | ✅ Journal CRUD   | BE: entries CRUD API / FE: 목록·생성·삭제 UI (textarea)                      | P0       |
-| Day 5     | ✅ OAuth 인증     | Supabase GitHub OAuth / BE: SupabaseAuthGuard 실전 적용 / FE: 세션 가드 완성 | P0       |
-| Day 6     | **Concepts**      | BE: concepts 조회 API / FE: 개념 목록·검색 UI                                | P0       |
-| Day 7     | **CI/CD**         | BE: GitHub Actions → AWS EC2 자동 배포 / FE: Vercel 자동 배포                | P0       |
-| Day 8     | **AI Agent 1**    | AgentService + Tool 1 (extract_concepts) + Ollama 임베딩                     | P0       |
-| Day 9     | **AI Agent 2–3**  | Tool 2 (search_connections + pgvector) + Tool 3 (build_mindmap 델타)         | P1       |
-| Day 10    | **SSE + Agent 4** | Tool 4 (recommend_next) + SSE 스트리밍 + FE AnalysisProgressPanel            | P1       |
-| Day 11    | **Tiptap 에디터** | textarea → Tiptap v2 교체 + SSE 실시간 분석 연동                             | P1       |
-| Day 12–13 | **Mindmap**       | BE mindmap API / FE D3.js MindmapCanvas + ConceptDetailDrawer                | P1       |
-| Day 14    | **Dashboard**     | recharts ConceptGrowthChart, WeeklyHeatmap                                   | P2       |
-| Day 15    | **Blog + PWA**    | SSG + SEO (JSON-LD, OG) + PWA manifest + sitemap                             | P2       |
+| 일차      | 기능              | 내용                                                                             | 우선순위 |
+| --------- | ----------------- | -------------------------------------------------------------------------------- | -------- |
+| Day 1–2   | ✅ DB 셋업        | Supabase migrations 001~011, pgvector HNSW 인덱스                                | P0       |
+| Day 3     | ✅ 스캐폴딩       | NX BE+FE 스캐폴딩, SupabaseModule, Auth/Layout 기본 구현                         | P0       |
+| Day 4     | ✅ Journal CRUD   | BE: entries CRUD API / FE: 목록·생성·삭제 UI (textarea)                          | P0       |
+| Day 5     | ✅ OAuth 인증     | Supabase GitHub OAuth / BE: SupabaseAuthGuard 실전 적용 / FE: 세션 가드 완성     | P0       |
+| Day 6     | ✅ Concepts       | BE: concepts 조회 API / FE: 개념 목록·검색 UI                                    | P0       |
+| Day 7     | ✅ CI/CD          | BE: GitHub Actions → AWS EC2 자동 배포 / FE: Vercel 자동 배포                    | P0       |
+| Day 8-A   | ✅ **Embedding**  | EmbeddingService (Gemini gemini-embedding-001, 768dim) + POST /api/test/embed    | P0       |
+| Day 8-B   | ✅ **개념 추출**  | AgentService.extractConcepts() + POST /api/test/extract                          | P0       |
+| Day 8-C   | ✅ **DB 저장**    | ConceptsService.upsertBatch() + entry_concepts / user_concepts 저장              | P0       |
+| Day 8-D   | **자동화 연결**   | JournalService.create() fire-and-forget 트리거                                   | P0       |
+| Day 9     | **FE 연결**       | 8-D 완료 후 일기 상세 페이지에 "학습한 개념" 섹션 추가 (SSE 없이 단순 연결)      | P0       |
+| Day 10    | **SSE + Agent 2** | Tool 2 (search_connections + pgvector) + SSE 스트리밍 + FE AnalysisProgressPanel | P1       |
+| Day 11    | **Tiptap 에디터** | textarea → Tiptap v2 교체 + SSE 실시간 분석 연동                                 | P1       |
+| Day 12–13 | **Mindmap**       | BE mindmap API / FE D3.js MindmapCanvas + ConceptDetailDrawer                    | P1       |
+| Day 14    | **Dashboard**     | recharts ConceptGrowthChart, WeeklyHeatmap                                       | P2       |
+| Day 15    | **Blog + PWA**    | SSG + SEO (JSON-LD, OG) + PWA manifest + sitemap                                 | P2       |
 
 ---
 
@@ -744,6 +745,8 @@ github.com → Settings → Developer settings → OAuth Apps → DevJournal (lo
 | 3   | **주제(토픽) 필수 입력** — 현재 `title`이 optional인데 required로 변경 검토                                                                                                                        | Day 4 수정    | 검토     |
 | 4   | **AI 기반 개념 제안 + 생각 도출** — 주제 입력 시 AI가 관련 개념을 먼저 제안하고, "이 개념에 대해 어떻게 생각하나요?" 형식의 질문으로 본인 생각을 끌어내어 일기가 자기 생각이 담긴 글이 되도록 유도 | Day 8 Agent   | 검토     |
 | 5   | **콘텐츠 내보내기** — 일기/개념 정리 후 외부 플랫폼 퍼블리시 지원: LinkedIn 포스팅 형식 변환, Velog/개인 블로그 마크다운 변환                                                                      | Day 15 Blog   | 검토     |
+| 6   | **일기 삭제 시 개념 카운터 연동** — 일기 삭제 시 연결된 `entry_concepts`의 `usage_count` 감소, 0이 되면 개념 자동 삭제 또는 보존 여부 선택 로직 필요                                               | 미정          | 검토     |
+| 7   | **모달 시스템 추가** — 삭제 확인, 개념 상세 보기 등 현재 `window.confirm` / tooltip으로 처리 중인 UI를 통합 모달 컴포넌트로 교체                                                                   | 미정          | 검토     |
 
 ---
 

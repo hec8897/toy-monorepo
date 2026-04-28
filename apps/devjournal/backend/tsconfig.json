@@ -5,13 +5,19 @@
   "references": [
     {
       "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
   ],
   "compilerOptions": {
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@devjournal/types": ["../types/index.ts"],
+      "@toy-monorepo/types": ["../../../packages/types/src/index.ts"],
+      "@toy-monorepo/common": ["../../../packages/common/src/index.ts"]
     }
   }
 }

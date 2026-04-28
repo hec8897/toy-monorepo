@@ -195,6 +195,7 @@ export type Database = {
         Row: {
           concept_id: string;
           ease_factor: number;
+          first_seen_entry_id: string | null;
           last_reviewed_at: string | null;
           learned_at: string;
           mastery_level: string;
@@ -205,6 +206,7 @@ export type Database = {
         Insert: {
           concept_id?: string;
           ease_factor?: number;
+          first_seen_entry_id?: string | null;
           last_reviewed_at?: string | null;
           learned_at?: string;
           mastery_level?: string;
@@ -215,6 +217,7 @@ export type Database = {
         Update: {
           concept_id?: string;
           ease_factor?: number;
+          first_seen_entry_id?: string | null;
           last_reviewed_at?: string | null;
           learned_at?: string;
           mastery_level?: string;
@@ -228,6 +231,13 @@ export type Database = {
             columns: ['concept_id'];
             isOneToOne: false;
             referencedRelation: 'concepts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_concepts_first_seen_entry_id_fkey';
+            columns: ['first_seen_entry_id'];
+            isOneToOne: false;
+            referencedRelation: 'entries';
             referencedColumns: ['id'];
           },
         ];
@@ -274,6 +284,15 @@ export type Database = {
           name: string;
           similarity: number;
         }[];
+      };
+      get_user_streak: { Args: { p_user_id: string }; Returns: number };
+      get_concept_growth: {
+        Args: { p_user_id: string; p_days?: number };
+        Returns: { date: string; cumulative: number }[];
+      };
+      get_entry_heatmap: {
+        Args: { p_user_id: string; p_days?: number };
+        Returns: { date: string; count: number }[];
       };
     };
     Enums: {

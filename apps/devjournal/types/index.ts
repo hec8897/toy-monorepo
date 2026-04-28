@@ -78,6 +78,10 @@ export interface EntryConceptRow {
   confidence: number;
 }
 
+export type EntryConceptResponse = Omit<Concept, 'embedding'> & {
+  confidence: number;
+};
+
 export interface Connection {
   from_id: string;
   to_id: string;
@@ -169,13 +173,52 @@ export interface RecommendNextOutput {
   streak_encouragement: string;
 }
 
+// ─── Mindmap API 응답 타입 (GET /api/mindmap) ─────────────────────────────────
+
+export interface MyMindmapNode {
+  id: string;
+  name: string;
+  category: string;
+  mastery: MasteryLevel;
+  review_count: number;
+  /** 사용자의 가장 최근 일기로 처음 등장한 개념 — UI 강조용 */
+  is_recent: boolean;
+}
+
+export interface MyMindmapEdge {
+  from: string;
+  to: string;
+  strength: number;
+  type: string;
+}
+
+export interface MyMindmapGraph {
+  nodes: MyMindmapNode[];
+  edges: MyMindmapEdge[];
+}
+
+export interface EntryRef {
+  id: string;
+  title: string | null;
+  created_at: string;
+}
+
+export interface ConceptDetail {
+  id: string;
+  name: string;
+  category: string;
+  description: string | null;
+  mastery: MasteryLevel;
+  review_count: number;
+  related_entries: EntryRef[];
+}
+
 // ─── SSE 이벤트 타입 ───────────────────────────────────────────────────────────
 
 export type SSEEventType =
   | 'progress'
   | 'concepts_extracted'
   | 'connections_found'
-  | 'mindmap_updated'
   | 'recommendations_ready'
   | 'analysis_complete'
   | 'step_failed'
@@ -193,11 +236,6 @@ export interface SSEConceptsExtractedData {
 
 export interface SSEConnectionsFoundData {
   connections: ConceptConnection[];
-}
-
-export interface SSEMindmapUpdatedData {
-  delta: { nodes: MindmapNode[]; links: MindmapLink[] };
-  total_node_count: number;
 }
 
 export interface SSERecommendationsReadyData {

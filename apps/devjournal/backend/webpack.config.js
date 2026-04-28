@@ -1,13 +1,20 @@
 const { join } = require('path');
 
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  externals: [nodeExternals()],
   resolve: {
     alias: {
       '@': join(__dirname, 'src'),
+      '@devjournal/types': join(__dirname, '../types/index.ts'),
+      '@toy-monorepo/types': join(
+        __dirname,
+        '../../../packages/types/src/index.ts',
+      ),
+      '@toy-monorepo/common': join(
+        __dirname,
+        '../../../packages/common/src/index.ts',
+      ),
     },
   },
   output: {
