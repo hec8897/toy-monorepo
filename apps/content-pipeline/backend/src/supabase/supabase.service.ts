@@ -1,23 +1,25 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+import { Database } from './database.types';
 
 @Injectable()
-export class SupabaseService implements OnModuleInit {
-  anon!: SupabaseClient;
-  serviceRole!: SupabaseClient;
+export class SupabaseService {
+  readonly anon: SupabaseClient<Database>;
+  readonly admin: SupabaseClient<Database>;
 
-  onModuleInit() {
-    const url = process.env.SUPABASE_URL;
-    const anonKey = process.env.SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  constructor(private readonly config: ConfigService) {
+    const url = this.config.getOrThrow<string>('SUPABASE_URL');
+    const anonKey = this.config.getOrThrow<string>('SUPABASE_ANON_KEY');
+    const serviceRoleKey = this.config.getOrThrow<string>(
+      'SUPABASE_SERVICE_ROLE_KEY',
+    );
 
-    if (!url || !anonKey || !serviceKey) {
-      throw new Error('Supabase env vars are missing');
-    }
+    // RLS 적용 — 사용자 요청 시 사용
+    this.anon = createClient<Database>(url, anonKey);
 
-    this.anon = createClient(url, anonKey);
-    this.serviceRole = createClient(url, serviceKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
+    // RLS 우회 — AI 분석 결과 쓰기 시 사용
+    this.admin = createClient<Database>(url, serviceRoleKey);
   }
 }

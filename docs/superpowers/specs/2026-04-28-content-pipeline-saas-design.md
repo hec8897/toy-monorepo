@@ -368,19 +368,19 @@ n8n에 들어오는 트래픽은 두 종류:
 
 ## 7. 기술 스택 결정 (확정)
 
-| 영역              | 결정                                                                                          |
-| ----------------- | --------------------------------------------------------------------------------------------- |
-| **앱 위치**       | `apps/content-pipeline/` 신설 + `apps/devjournal/` read-only 보존 (B-3)                       |
-| **MVP 스코프**    | **Solid+ MVP** (Tistory 제외 변형) — n8n 자동 발행 (네이버+인스타) + 스케줄러, 예상 17~22일   |
-| **AI LLM**        | `gemini-2.5-flash` 메인 + 폴백 체인 (`2.5-flash-lite` → `2.0-flash` → `2.0-flash-lite`)       |
-| **AI Embedding**  | `gemini-embedding-001` (768dim) — 추후 콘텐츠 유사도/검색 확장 시 활용                        |
-| **AI SDK**        | `@google/generative-ai` (1차 재활용)                                                          |
-| **백엔드**        | NestJS (1차 devjournal-backend 패턴 재활용)                                                   |
-| **프론트엔드**    | Next.js App Router (1차 devjournal-frontend 패턴 재활용)                                      |
-| **DB**            | Supabase — **1차와 같은 인스턴스 + 새 스키마/테이블** (무료 티어 절약, 인증/배포 환경 재활용) |
-| **카드뉴스 렌더** | HTML → Image (Puppeteer 또는 Satori), 단색 배경 + 큰 타이포                                   |
-| **인증**          | 1차 JWT 패턴 재활용 — 구체 구현(Supabase Auth vs NestJS JWT)은 plan 단계에서 결정             |
-| **결제**          | Lean MVP out-of-scope. 3차 이후 Toss Payments 우선 검토                                       |
+| 영역              | 결정                                                                                                                               |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **앱 위치**       | `apps/content-pipeline/` 신설 + `apps/devjournal/` read-only 보존 (B-3)                                                            |
+| **MVP 스코프**    | **Solid+ MVP** (Tistory 제외 변형) — n8n 자동 발행 (네이버+인스타) + 스케줄러, 예상 17~22일                                        |
+| **AI LLM**        | `gemini-2.5-flash` 메인 + 폴백 체인 (`2.5-flash-lite` → `2.0-flash` → `2.0-flash-lite`)                                            |
+| **AI Embedding**  | `gemini-embedding-001` (768dim) — 추후 콘텐츠 유사도/검색 확장 시 활용                                                             |
+| **AI SDK**        | `@google/generative-ai` (1차 재활용)                                                                                               |
+| **백엔드**        | NestJS (1차 devjournal-backend 패턴 재활용)                                                                                        |
+| **프론트엔드**    | Next.js App Router (1차 devjournal-frontend 패턴 재활용)                                                                           |
+| **DB**            | Supabase — **content-pipeline 전용 신규 프로젝트** (1차 devjournal Supabase는 pause). auth.users / RLS / 마이그레이션 모두 cp 전용 |
+| **카드뉴스 렌더** | HTML → Image (Puppeteer 또는 Satori), 단색 배경 + 큰 타이포                                                                        |
+| **인증**          | 1차 JWT 패턴 재활용 — 구체 구현(Supabase Auth vs NestJS JWT)은 plan 단계에서 결정                                                  |
+| **결제**          | Lean MVP out-of-scope. 3차 이후 Toss Payments 우선 검토                                                                            |
 
 ## 7.5. plan 단계 / 후속 사이클로 미룬 결정
 
@@ -442,6 +442,8 @@ n8n에 들어오는 트래픽은 두 종류:
 ---
 
 - **2026-05-01**: Phase 1 plan 작성 완료. 핵심 결정 — 인증 = Supabase Auth + `SupabaseAuthGuard` 1차 devjournal 패턴 1:1 재활용 (NestJS JWT 옵션 폐기), 도메인 테이블 = `cp_*` 접두어로 `public` 스키마 격리(별도 DB 스키마 분리는 미사용 — Supabase PostgREST 노출 설정 회피), n8n 영속 = 같은 Supabase Postgres의 별도 `n8n` schema + `n8n_runner` role, 배포 자동화 = GitHub Actions OIDC → ECR/ECS update-service
+- **2026-05-01**: **DB 결정 변경** — content-pipeline 전용 **신규 Supabase 프로젝트** 생성 (1차 devjournal Supabase는 pause). 이전 결정(2026-04-28 "1차와 같은 인스턴스" + 2026-05-01 "`cp_*` 접두어 + public schema") 폐기. 사유 — (1) 일반 SaaS 출시 대상이라 1차 dogfooding 사용자와 분리 필요 (2) RLS/마이그레이션 격리로 사고 위험 ↓ (3) 1차 pause로 무료 슬롯 재배치 가능. 영향 — 도메인 테이블 접두어 제거(자유로운 이름), `auth.users` 분리(양쪽 별도 가입), `.env`에 cp 전용 키 사용, n8n schema는 cp Supabase Postgres에 위치(이전 결정 그대로)
+- **2026-05-01**: `SupabaseService` 구현 패턴 = devjournal 1차 실구현 1:1 재활용 (`ConfigService.getOrThrow` + constructor 주입 + `SupabaseClient<Database>` 타입드 + `anon`/`admin` 네이밍). 이전 plan 초안(`process.env` + `OnModuleInit` + `serviceRole` 네이밍) 폐기 — backend-code-style.md "🔧 설정 관리"의 ConfigModule 사용 원칙 + Phase 2 도메인 테이블 도입 시 IDE 자동완성 지원
 
 ---
 
