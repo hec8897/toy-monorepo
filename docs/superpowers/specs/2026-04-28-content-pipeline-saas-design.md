@@ -400,7 +400,17 @@ n8n에 들어오는 트래픽은 두 종류:
 
 ---
 
-## 8. 결정 이력
+## 8. Plans
+
+| Phase | Plan                                                              | 상태                 |
+| ----- | ----------------------------------------------------------------- | -------------------- |
+| 1     | [Phase 1 — 기반](../plans/2026-05-01-content-pipeline-phase-1.md) | 작성 완료, 실행 대기 |
+
+> Phase 2~8 plan은 직전 Phase 완료 후 순차 작성. Phase 1이 굳혀야 Phase 2 위에 얹을 토대가 명확해짐.
+
+---
+
+## 9. 결정 이력
 
 - **2026-04-28**: 1차 프로토타입(DevJournal Day 14) 종료 결정 → 컨셉 피벗
 - **2026-04-28**: 새 컨셉 = AI 인터뷰 기반 콘텐츠 자동화 SaaS
@@ -431,7 +441,11 @@ n8n에 들어오는 트래픽은 두 종류:
 
 ---
 
-## 9. 참고 — 1차 프로토타입과의 연결
+- **2026-05-01**: Phase 1 plan 작성 완료. 핵심 결정 — 인증 = Supabase Auth + `SupabaseAuthGuard` 1차 devjournal 패턴 1:1 재활용 (NestJS JWT 옵션 폐기), 도메인 테이블 = `cp_*` 접두어로 `public` 스키마 격리(별도 DB 스키마 분리는 미사용 — Supabase PostgREST 노출 설정 회피), n8n 영속 = 같은 Supabase Postgres의 별도 `n8n` schema + `n8n_runner` role, 배포 자동화 = GitHub Actions OIDC → ECR/ECS update-service
+
+---
+
+## 10. 참고 — 1차 프로토타입과의 연결
 
 - **재활용 가능 자산**: NestJS + Supabase + JWT 인증, 모노레포 구조, AI API 연동 경험, EC2 배포 경험
 - **재활용 가능 아이디어**: 1차 ideation 메모(`project_devjournal_ideation.md`)의 "AI 생각 도출" 아이디어가 본 컨셉의 AI 인터뷰로 발전
