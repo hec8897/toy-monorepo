@@ -1,0 +1,23 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@content-pipeline/types": ["../types/index.ts"],
+      "@toy-monorepo/types": ["../../../packages/types/src/index.ts"],
+      "@toy-monorepo/common": ["../../../packages/common/src/index.ts"]
+    }
+  }
+}

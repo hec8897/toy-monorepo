@@ -9,7 +9,7 @@
 - 백엔드 = NestJS (devjournal 패턴 1:1 재활용 — `SupabaseModule`, `SupabaseAuthGuard`, raw SQL 마이그레이션). 컨테이너 = Docker → ECR → ECS Fargate.
 - 프론트엔드 = Next.js App Router (devjournal `domains/` + `shared/` 폴더 패턴). 배포는 Vercel(devjournal과 동일).
 - 인프라 = 단일 VPC + public subnet only, ALB 호스트 라우팅 (`api.<domain>` → backend ECS Service, `n8n.<domain>` → n8n ECS Service). Cloudflare Access로 n8n UI 보호, `/webhook/*` 만 public + HMAC.
-- DB = 1차 Supabase 인스턴스 재활용. content-pipeline 테이블은 `cp_` 접두어로 `public` 스키마 안에 격리. n8n 메타데이터는 같은 Supabase Postgres에 별도 DB(`n8n_meta`)로 분리.
+- DB = **content-pipeline 전용 신규 Supabase 프로젝트** (1차 devjournal Supabase는 pause). 도메인 테이블은 `public` 스키마에 직접 (접두어 없이). n8n 메타데이터는 같은 cp Supabase Postgres의 별도 `n8n` schema + `n8n_runner` role.
 
 **Tech Stack:** NestJS 11 / Next.js 16 (App Router) / pnpm 10 / Nx 22 / @supabase/supabase-js / Docker / AWS (ECR + ECS Fargate + ALB + CloudWatch) / Cloudflare (DNS + Zero Trust Access) / GitHub Actions
 
@@ -19,7 +19,7 @@
 - 발행 큐 DB 스키마, n8n 워크플로우, 스케줄러 (Phase 5)
 - 채널 어댑터 (네이버 메일 트릭 / 인스타 Graph API) (Phase 6~7)
 - HMAC 서명 검증 모듈 (Phase 5에서 first-use 시 도입)
-- `cp_*` 도메인 테이블 (`cp_topics`, `cp_drafts` 등 — Phase 2 시작 시 첫 마이그레이션)
+- 도메인 테이블 (`topics`, `drafts` 등 — Phase 2 시작 시 첫 마이그레이션)
 
 ---
 
@@ -243,7 +243,7 @@ cp apps/devjournal/backend/jest.config.cts  apps/content-pipeline/backend/jest.c
 `apps/content-pipeline/backend/.env.example`:
 
 ```env
-# 1차 devjournal과 같은 Supabase 프로젝트 사용
+# content-pipeline 전용 Supabase 프로젝트 (1차 devjournal과 분리, 1차는 pause)
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
@@ -309,30 +309,54 @@ import { SupabaseService } from './supabase.service';
 export class SupabaseModule {}
 ```
 
-`apps/content-pipeline/backend/src/supabase/supabase.service.ts`:
+`apps/content-pipeline/backend/src/supabase/database.types.ts` (Phase 1은 도메인 테이블 0개, placeholder. Phase 2에서 `supabase gen types typescript`로 재생성):
 
 ```ts
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
+
+export type Database = {
+  public: {
+    Tables: Record<string, never>;
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+};
+```
+
+`apps/content-pipeline/backend/src/supabase/supabase.service.ts` — devjournal 1차 실구현 1:1 (ConfigService + typed `<Database>` + `anon`/`admin` 네이밍):
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+import { Database } from './database.types';
 
 @Injectable()
-export class SupabaseService implements OnModuleInit {
-  anon!: SupabaseClient;
-  serviceRole!: SupabaseClient;
+export class SupabaseService {
+  readonly anon: SupabaseClient<Database>;
+  readonly admin: SupabaseClient<Database>;
 
-  onModuleInit() {
-    const url = process.env.SUPABASE_URL;
-    const anonKey = process.env.SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  constructor(private readonly config: ConfigService) {
+    const url = this.config.getOrThrow<string>('SUPABASE_URL');
+    const anonKey = this.config.getOrThrow<string>('SUPABASE_ANON_KEY');
+    const serviceRoleKey = this.config.getOrThrow<string>(
+      'SUPABASE_SERVICE_ROLE_KEY',
+    );
 
-    if (!url || !anonKey || !serviceKey) {
-      throw new Error('Supabase env vars are missing');
-    }
+    // RLS 적용 — 사용자 요청 시 사용
+    this.anon = createClient<Database>(url, anonKey);
 
-    this.anon = createClient(url, anonKey);
-    this.serviceRole = createClient(url, serviceKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
+    // RLS 우회 — AI 분석 결과 쓰기 시 사용
+    this.admin = createClient<Database>(url, serviceRoleKey);
   }
 }
 ```
@@ -820,13 +844,13 @@ git commit -m "feat(content-pipeline): scaffold Next.js frontend (login, AuthGua
 
 ```sql
 -- content-pipeline 앱이 사용할 PostgreSQL 확장.
--- 1차 devjournal과 같은 Supabase 인스턴스에 적용 — 이미 활성화되어 있으면 no-op.
+-- content-pipeline 전용 Supabase 프로젝트에 적용. 1차 devjournal과 무관.
 create extension if not exists "pgcrypto";
 create extension if not exists "uuid-ossp";
 create extension if not exists "vector";
 ```
 
-(`vector`는 Phase 2~3의 임베딩 활용을 미리 준비. 1차에 이미 enabled일 확률 높음.)
+(`vector`는 Phase 2~3의 임베딩 활용을 미리 준비. cp 신규 프로젝트라 모두 신규 활성화.)
 
 - [ ] **Step 2: 마이그레이션 가이드 README 작성**
 
@@ -835,7 +859,7 @@ create extension if not exists "vector";
 ````md
 # content-pipeline / Supabase 마이그레이션
 
-1차 devjournal과 같은 Supabase 프로젝트를 공유한다. 신규 테이블은 `cp_` 접두어로 `public` 스키마에 둔다 (devjournal 테이블과 충돌 방지).
+content-pipeline 전용 신규 Supabase 프로젝트에 적용 (1차 devjournal Supabase는 pause 상태). 도메인 테이블은 `public` 스키마에 직접 — 접두어 없이 자유롭게 명명한다.
 
 ## 적용 방법
 
@@ -853,12 +877,12 @@ supabase db push --include-all
 ```
 ````
 
-> ⚠️ 1차 devjournal 마이그레이션이 같은 인스턴스에 이미 적용되어 있다. 본 폴더는 **content-pipeline 전용** 마이그레이션만 담는다. devjournal 마이그레이션을 다시 실행하지 말 것.
+> ⚠️ cp 전용 신규 Supabase 프로젝트라 빈 상태에서 시작. 1차 devjournal 마이그레이션과 무관 — 본 폴더는 cp 마이그레이션만 담는다.
 
 ## 명명 규칙
 
-- 도메인 테이블: `cp_` 접두어 (예: `cp_topics`, `cp_drafts`)
-- RLS 정책: `cp_<table>: <intent>` 패턴
+- 도메인 테이블: 접두어 없이 자유롭게 (예: `topics`, `drafts`, `interview_sessions`)
+- RLS 정책: `<table>: <intent>` 패턴
 - 마이그레이션 파일명: `YYYYMMDDHHMMSS_<description>.sql`
 
 ````
@@ -894,14 +918,16 @@ git commit -m "chore(content-pipeline): bootstrap supabase migrations folder"
 }
 ```
 
-- [ ] **Step 2: 로컬 .env 채우기 (devjournal과 같은 Supabase 키 재사용)**
+- [ ] **Step 2: 로컬 .env 채우기 (cp 전용 Supabase 프로젝트 키)**
+
+> 사전 작업: supabase.com 에서 content-pipeline 전용 신규 프로젝트 생성 → Settings > API 에서 URL / anon key / service_role key 확보.
 
 `apps/content-pipeline/backend/.env`:
 
 ```env
-SUPABASE_URL=<devjournal과 동일>
-SUPABASE_ANON_KEY=<devjournal과 동일>
-SUPABASE_SERVICE_ROLE_KEY=<devjournal과 동일>
+SUPABASE_URL=<cp 프로젝트 URL>
+SUPABASE_ANON_KEY=<cp 프로젝트 anon key>
+SUPABASE_SERVICE_ROLE_KEY=<cp 프로젝트 service_role key>
 PORT=3003
 FRONTEND_URL=http://localhost:3004
 ```
@@ -909,8 +935,8 @@ FRONTEND_URL=http://localhost:3004
 `apps/content-pipeline/frontend/.env.local`:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=<devjournal과 동일>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<devjournal과 동일>
+NEXT_PUBLIC_SUPABASE_URL=<cp 프로젝트 URL>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<cp 프로젝트 anon key>
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3003/api
 ```
 
@@ -1309,7 +1335,7 @@ git commit -m "chore(content-pipeline): document AWS ECS Fargate bootstrap + add
 
 - [ ] **Step 1: n8n Postgres 영속용 — Supabase Postgres에 별도 schema/role**
 
-같은 Supabase 인스턴스의 Postgres에 n8n용 role + schema 생성. Supabase Studio SQL 에디터에서:
+cp 전용 Supabase 프로젝트(Task 4에서 사용)의 Postgres에 n8n용 role + schema 생성. Supabase Studio SQL 에디터에서:
 
 ```sql
 -- n8n 전용 schema (이름 충돌 방지)
@@ -1614,6 +1640,8 @@ jobs:
 
 ```md
 - **2026-05-01**: Phase 1 plan 작성 — 인증 = Supabase Auth + SupabaseAuthGuard (1차 devjournal 패턴 1:1 재활용 결정), 도메인 테이블은 `cp_*` 접두어로 `public` 스키마 격리, n8n 영속 = 같은 Supabase Postgres의 `n8n` schema, GitHub Actions OIDC로 ECS deploy
+- **2026-05-01**: DB 결정 변경 — content-pipeline 전용 신규 Supabase 프로젝트 생성 (1차 pause). 도메인 테이블 접두어 제거(자유로운 이름), `auth.users` 분리, n8n schema는 cp Supabase Postgres에 위치
+- **2026-05-01**: `SupabaseService` 패턴 = devjournal 1차 실구현 1:1 (`ConfigService.getOrThrow` + constructor + `SupabaseClient<Database>` + `anon`/`admin` 네이밍). 이전 plan 초안(process.env + OnModuleInit + serviceRole) 폐기
 ```
 
 - [ ] **Step 4: CLAUDE.md 업데이트**
@@ -1694,6 +1722,6 @@ git push
 
 ## Phase 2 시작 시점 첫 결정 (이 plan 스코프 밖, 메모만)
 
-- 첫 도메인 테이블 = `cp_topics` (id, user_id, title, raw_input, created_at) — Phase 2 인터뷰 진입 시 채움
+- 첫 도메인 테이블 = `topics` (id, user_id, title, raw_input, created_at) — Phase 2 인터뷰 진입 시 채움
 - 인터뷰 prompt 시스템 + few-shot 위치 = `apps/content-pipeline/backend/src/interview/prompts/`
 - LLM 호출 폴백 체인 = devjournal `apps/devjournal/backend/src/agent/` 패턴 재활용 후보

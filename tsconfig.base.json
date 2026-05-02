@@ -17,7 +17,8 @@
     "paths": {
       "@toy-monorepo/common": ["packages/common/src/index.ts"],
       "@toy-monorepo/types": ["packages/types/src/index.ts"],
-      "@devjournal/types": ["apps/devjournal/types/index.ts"]
+      "@devjournal/types": ["apps/devjournal/types/index.ts"],
+      "@content-pipeline/types": ["apps/content-pipeline/types/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

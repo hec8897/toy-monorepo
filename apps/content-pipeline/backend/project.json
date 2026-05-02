@@ -1,0 +1,61 @@
+{
+  "name": "content-pipeline-backend",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/content-pipeline/backend/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "webpack-cli build",
+        "args": ["--node-env=production"],
+        "cwd": "apps/content-pipeline/backend"
+      },
+      "configurations": {
+        "development": { "args": ["--node-env=development"] }
+      }
+    },
+    "prune-lockfile": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "executor": "@nx/js:prune-lockfile",
+      "outputs": [
+        "{workspaceRoot}/dist/apps/content-pipeline/backend/package.json",
+        "{workspaceRoot}/dist/apps/content-pipeline/backend/pnpm-lock.yaml"
+      ],
+      "options": { "buildTarget": "build" }
+    },
+    "copy-workspace-modules": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "outputs": [
+        "{workspaceRoot}/dist/apps/content-pipeline/backend/workspace_modules"
+      ],
+      "executor": "@nx/js:copy-workspace-modules",
+      "options": { "buildTarget": "build" }
+    },
+    "prune": {
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "executor": "nx:noop"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "cd apps/content-pipeline/backend && webpack-cli build --node-env=development --watch",
+          "node dist/apps/content-pipeline/backend/main.js"
+        ],
+        "parallel": true
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/content-pipeline/backend/jest.config.cts"
+      }
+    }
+  },
+  "tags": []
+}
