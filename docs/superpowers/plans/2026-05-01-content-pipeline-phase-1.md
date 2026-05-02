@@ -19,7 +19,7 @@
 - 발행 큐 DB 스키마, n8n 워크플로우, 스케줄러 (Phase 5)
 - 채널 어댑터 (네이버 메일 트릭 / 인스타 Graph API) (Phase 6~7)
 - HMAC 서명 검증 모듈 (Phase 5에서 first-use 시 도입)
-- `cp_*` 도메인 테이블 (`cp_topics`, `cp_drafts` 등 — Phase 2 시작 시 첫 마이그레이션)
+- 도메인 테이블 (`topics`, `drafts` 등 — Phase 2 시작 시 첫 마이그레이션)
 
 ---
 
@@ -1335,7 +1335,7 @@ git commit -m "chore(content-pipeline): document AWS ECS Fargate bootstrap + add
 
 - [ ] **Step 1: n8n Postgres 영속용 — Supabase Postgres에 별도 schema/role**
 
-같은 Supabase 인스턴스의 Postgres에 n8n용 role + schema 생성. Supabase Studio SQL 에디터에서:
+cp 전용 Supabase 프로젝트(Task 4에서 사용)의 Postgres에 n8n용 role + schema 생성. Supabase Studio SQL 에디터에서:
 
 ```sql
 -- n8n 전용 schema (이름 충돌 방지)
@@ -1722,6 +1722,6 @@ git push
 
 ## Phase 2 시작 시점 첫 결정 (이 plan 스코프 밖, 메모만)
 
-- 첫 도메인 테이블 = `cp_topics` (id, user_id, title, raw_input, created_at) — Phase 2 인터뷰 진입 시 채움
+- 첫 도메인 테이블 = `topics` (id, user_id, title, raw_input, created_at) — Phase 2 인터뷰 진입 시 채움
 - 인터뷰 prompt 시스템 + few-shot 위치 = `apps/content-pipeline/backend/src/interview/prompts/`
 - LLM 호출 폴백 체인 = devjournal `apps/devjournal/backend/src/agent/` 패턴 재활용 후보
